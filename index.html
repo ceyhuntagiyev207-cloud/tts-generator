@@ -203,6 +203,16 @@ const db = firebase.firestore();
 let currentUser = null;
 let currentApiKey = "";
 let currentDocId = null;
+
+async function loadApiKey() {
+  try {
+    const doc = await db.collection('config').doc('app').get();
+    if(doc.exists) {
+      currentApiKey = doc.data().anthropicKey || "";
+      hide('apikey-banner');
+    }
+  } catch(e) { console.log('API key yüklənmədi:', e); }
+}
 let currentResult = null;
 let activeSection = "general";
 let userDocs = [];
@@ -242,8 +252,7 @@ auth.onAuthStateChanged(user => {
     currentUser = user;
     show('page-app'); hide('page-login');
     document.getElementById('user-name-display').textContent = user.displayName || user.email;
-    const savedKey = localStorage.getItem('anthropic_key_' + user.uid);
-    if(savedKey) { currentApiKey = savedKey; hide('apikey-banner'); }
+    await loadApiKey();
     loadDocs();
   } else {
     currentUser = null;
@@ -292,7 +301,7 @@ function saveApiKey() {
   const k = document.getElementById('apikey-input').value.trim();
   if(!k) return;
   currentApiKey = k;
-  localStorage.setItem('anthropic_key_' + currentUser.uid, k);
+  db.collection('config').doc('app').set({ anthropicKey: k });
   hide('apikey-banner');
 }
 
