@@ -180,6 +180,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 const db = firebase.firestore();
 
 // STATE
@@ -257,10 +258,14 @@ auth.onAuthStateChanged(async user=>{
 async function loadApiKey(){
   try{
     const doc=await db.collection('config').doc('app').get();
-    if(doc.exists && doc.data().anthropicKey){
-      apiKey=doc.data().anthropicKey;
+    console.log('Config doc exists:', doc.exists);
+    if(doc.exists){
+      console.log('Config data:', doc.data());
+      const key = doc.data().anthropicKey;
+      console.log('Key found:', key ? 'YES (length: '+key.length+')' : 'NO');
+      if(key){ apiKey=key.trim(); }
     }
-  }catch(e){console.warn('API key yüklənmədi',e);}
+  }catch(e){console.warn('API key yüklənmədi:',e);}
 }
 
 // BUTTON EVENTS — window.onload içində bağla
