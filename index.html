@@ -24,7 +24,7 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
 </head>
 <body>
 
-<!-- LOGIN PAGE -->
+<!-- LOGIN -->
 <div id="page-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e3a5f,#2563eb)">
   <div style="background:white;border-radius:16px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
     <div style="text-align:center;margin-bottom:28px">
@@ -32,8 +32,6 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
       <div style="font-weight:800;font-size:22px;color:#1e3a5f">TTS Generator</div>
       <div style="font-size:13px;color:#64748b;margin-top:4px">IT Biznes Analitik Platforması</div>
     </div>
-
-    <!-- Login Form -->
     <div id="login-form">
       <div style="margin-bottom:14px">
         <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">EMAIL</label>
@@ -52,8 +50,6 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
       </div>
       <div id="login-err" class="err hidden"></div>
     </div>
-
-    <!-- Register Form -->
     <div id="register-form" class="hidden">
       <div style="margin-bottom:14px">
         <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">AD SOYAD</label>
@@ -95,6 +91,18 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
     </div>
   </div>
 
+  <!-- API Key Banner -->
+  <div id="apikey-banner" style="background:#fffbeb;border-bottom:2px solid #fbbf24;padding:12px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="font-size:16px">🔑</span>
+    <div style="flex:1;min-width:200px">
+      <div style="font-weight:700;font-size:13px;color:#92400e">Anthropic API Key daxil edin</div>
+      <div style="font-size:12px;color:#b45309">console.anthropic.com → API Keys → Create Key. Key yalnız sizin cihazda saxlanır.</div>
+    </div>
+    <input id="apikey-input" type="password" placeholder="sk-ant-..."
+      style="border:1.5px solid #fbbf24;border-radius:8px;padding:8px 12px;font-size:13px;width:300px"/>
+    <button id="btn-save-key" style="background:#f59e0b;color:white;border:none;border-radius:8px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer">Saxla</button>
+  </div>
+
   <div style="padding:20px;max-width:1200px;margin:0 auto">
     <div style="display:flex;gap:20px;align-items:flex-start">
 
@@ -111,7 +119,7 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
         </div>
       </div>
 
-      <!-- RIGHT: Panels -->
+      <!-- RIGHT -->
       <div style="flex:1">
 
         <!-- Empty -->
@@ -122,7 +130,7 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
           <button id="btn-empty-new" class="btn-primary">+ Yeni TTS Yarat</button>
         </div>
 
-        <!-- New Doc -->
+        <!-- New -->
         <div id="panel-new" class="card hidden">
           <div style="font-weight:700;font-size:15px;color:#1e3a5f;margin-bottom:4px">📝 Elicitation Qeydləri</div>
           <div style="font-size:13px;color:#64748b;margin-bottom:14px">Stakeholderlərlə görüşdən topladığın qeydləri sərbəst mətnlə yaz. Claude TTS-in 16 bölməsini avtomatik dolduracaq.</div>
@@ -169,7 +177,6 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
 </div>
 
 <script>
-// FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyAnwjfcronxcuziIBONSA1z1Y4K9_WO18g",
   authDomain: "tts-generator-556a8.firebaseapp.com",
@@ -183,15 +190,9 @@ const auth = firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 const db = firebase.firestore();
 
-// STATE
-let currentUser = null;
-let apiKey = "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";
-let currentDocId = null;
-let currentResult = null;
-let activeSection = "general";
-let userDocs = [];
+let currentUser=null, apiKey="", currentDocId=null, currentResult=null, activeSection="general", userDocs=[];
 
-const TABS = [
+const TABS=[
   {key:"general",code:"1.1",label:"Ümumi Məlumat"},
   {key:"stakeholders",code:"1.3",label:"Maraqlı Tərəflər"},
   {key:"summary",code:"1.4",label:"Sənədin Xülasəsi"},
@@ -210,7 +211,7 @@ const TABS = [
   {key:"acceptance",code:"13",label:"Qəbul Meyarları"},
 ];
 
-const EXAMPLE = `Birbank Biznes tətbiqində mövcud onboarding prosesində dəyişiklik tələb olunur.
+const EXAMPLE=`Birbank Biznes tətbiqində mövcud onboarding prosesində dəyişiklik tələb olunur.
 
 Hazırda müştəri onboarding zamanı biznes sənədlərini (vergi şəhadətnaməsi, nizamnamə, müqavilə) əl ilə bank filialına təqdim edir. Bu proses 3-5 iş günü çəkir.
 
@@ -220,90 +221,62 @@ Yeni tələb: Müştəri sənədləri Birbank Biznes mobil tətbiqi vasitəsilə
 Texniki: REST API, CBS inteqrasiyası, OCR servisi, push notification gateway.
 Gözlənilən nəticə: Onboarding müddəti 3-5 gündən 24 saata endirilsin.`;
 
-// HELPERS
 const $=id=>document.getElementById(id);
 const show=id=>$(id).classList.remove('hidden');
 const hide=id=>$(id).classList.add('hidden');
 const val=id=>$(id).value.trim();
+const showErr=(id,msg)=>{const e=$(id);e.textContent=msg;e.classList.remove('hidden');};
+const hideErr=id=>$(id).classList.add('hidden');
+function showPanel(n){['empty','new','loading','view'].forEach(p=>hide('panel-'+p));show('panel-'+n);}
 
-function showPanel(name){
-  ['empty','new','loading','view'].forEach(p=>hide('panel-'+p));
-  show('panel-'+name);
-}
-
-function showErr(id,msg){
-  const el=$(id);
-  el.textContent=msg;
-  el.classList.remove('hidden');
-}
-
-function hideErr(id){ $(id).classList.add('hidden'); }
-
-// AUTH EVENTS
-auth.onAuthStateChanged(async user=>{
+auth.onAuthStateChanged(user=>{
   if(user){
     currentUser=user;
-    hide('page-login');
-    show('page-app');
+    hide('page-login'); show('page-app');
     $('user-display').textContent=user.displayName||user.email;
-    await loadDocs();
+    const saved=localStorage.getItem('tts_apikey_'+user.uid);
+    if(saved){apiKey=saved;hide('apikey-banner');}
+    loadDocs();
   } else {
     currentUser=null;
-    show('page-login');
-    hide('page-app');
+    show('page-login'); hide('page-app');
   }
 });
 
-async function loadApiKey(){
-  try{
-    const doc=await db.collection('config').doc('app').get();
-    console.log('Config doc exists:', doc.exists);
-    if(doc.exists){
-      console.log('Config data:', doc.data());
-      const key = doc.data().anthropicKey;
-      console.log('Key found:', key ? 'YES (length: '+key.length+')' : 'NO');
-      if(key){ apiKey=key.trim(); }
-    }
-  }catch(e){console.warn('API key yüklənmədi:',e);}
+function getAuthErr(code){
+  return({'auth/user-not-found':'Bu email ilə istifadəçi tapılmadı','auth/wrong-password':'Şifrə yanlışdır','auth/invalid-credential':'Email və ya şifrə yanlışdır','auth/email-already-in-use':'Bu email artıq qeydiyyatdadır','auth/weak-password':'Şifrə minimum 6 simvol olmalıdır','auth/invalid-email':'Email formatı yanlışdır'}[code]||'Xəta: '+code);
 }
 
-// BUTTON EVENTS — window.onload içində bağla
 window.addEventListener('load',()=>{
-
-  $('go-register').addEventListener('click',e=>{
-    e.preventDefault();
-    hide('login-form'); show('register-form');
-  });
-
-  $('go-login').addEventListener('click',e=>{
-    e.preventDefault();
-    hide('register-form'); show('login-form');
-  });
+  $('go-register').addEventListener('click',e=>{e.preventDefault();hide('login-form');show('register-form');});
+  $('go-login').addEventListener('click',e=>{e.preventDefault();hide('register-form');show('login-form');});
 
   $('btn-login').addEventListener('click',async()=>{
     hideErr('login-err');
-    const email=val('login-email'), pass=val('login-pass');
+    const email=val('login-email'),pass=val('login-pass');
     if(!email||!pass){showErr('login-err','Email və şifrə daxil edin');return;}
-    try{
-      await auth.signInWithEmailAndPassword(email,pass);
-    }catch(e){
-      showErr('login-err',getAuthErr(e.code));
-    }
+    try{await auth.signInWithEmailAndPassword(email,pass);}
+    catch(e){showErr('login-err',getAuthErr(e.code));}
   });
 
   $('btn-register').addEventListener('click',async()=>{
     hideErr('reg-err');
-    const name=val('reg-name'), email=val('reg-email'), pass=val('reg-pass');
+    const name=val('reg-name'),email=val('reg-email'),pass=val('reg-pass');
     if(!name||!email||!pass){showErr('reg-err','Bütün sahələri doldurun');return;}
     try{
       const cred=await auth.createUserWithEmailAndPassword(email,pass);
       await cred.user.updateProfile({displayName:name});
-    }catch(e){
-      showErr('reg-err',getAuthErr(e.code));
-    }
+    }catch(e){showErr('reg-err',getAuthErr(e.code));}
   });
 
-  $('btn-logout').addEventListener('click',()=>auth.signOut());
+  $('btn-logout').addEventListener('click',()=>{apiKey='';auth.signOut();});
+  $('btn-save-key').addEventListener('click',()=>{
+    const k=val('apikey-input');
+    if(!k){showErr('login-err','Key daxil edin');return;}
+    apiKey=k;
+    localStorage.setItem('tts_apikey_'+currentUser.uid,k);
+    hide('apikey-banner');
+  });
   $('btn-new-doc').addEventListener('click',()=>showNewDoc());
   $('btn-empty-new').addEventListener('click',()=>showNewDoc());
   $('btn-view-new').addEventListener('click',()=>showNewDoc());
@@ -314,186 +287,117 @@ window.addEventListener('load',()=>{
   });
 });
 
-function getAuthErr(code){
-  return {
-    'auth/user-not-found':'Bu email ilə istifadəçi tapılmadı',
-    'auth/wrong-password':'Şifrə yanlışdır',
-    'auth/invalid-credential':'Email və ya şifrə yanlışdır',
-    'auth/email-already-in-use':'Bu email artıq qeydiyyatdadır',
-    'auth/weak-password':'Şifrə minimum 6 simvol olmalıdır',
-    'auth/invalid-email':'Email formatı yanlışdır',
-  }[code]||('Xəta: '+code);
-}
-
-// DOCS
-function showNewDoc(){
-  currentDocId=null;
-  showPanel('new');
-  hideErr('gen-err');
-  $('doc-title').value='';
-  $('elicitation-input').value='';
-  renderDocsList();
-}
-
 async function loadDocs(){
   try{
-    const snap=await db.collection('documents')
-      .where('uid','==',currentUser.uid)
-      .orderBy('createdAt','desc')
-      .get();
+    const snap=await db.collection('documents').where('uid','==',currentUser.uid).orderBy('createdAt','desc').get();
     userDocs=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderDocsList();
     if(userDocs.length===0) showPanel('empty');
-  }catch(e){
-    console.warn('Docs yüklənmədi:',e);
-    showPanel('empty');
-  }
+  }catch(e){console.warn(e);showPanel('empty');}
 }
 
 function renderDocsList(){
   const el=$('docs-list');
-  if(userDocs.length===0){
-    el.innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Sənəd yoxdur</div>';
-    return;
-  }
+  if(!userDocs.length){el.innerHTML='<div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Sənəd yoxdur</div>';return;}
   el.innerHTML=userDocs.map(doc=>{
     const date=doc.createdAt?new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ'):'—';
     const active=doc.id===currentDocId;
-    return `<div data-id="${doc.id}" class="doc-item"
-      style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f1f5f9;
-      background:${active?'#eff6ff':'white'};
-      border-left:${active?'3px solid #2563eb':'3px solid transparent'}">
+    return `<div data-id="${doc.id}" class="doc-item" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:${active?'#eff6ff':'white'};border-left:${active?'3px solid #2563eb':'3px solid transparent'}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;color:${active?'#1d4ed8':'#374151'};font-weight:${active?600:400};
-            white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${doc.title}</div>
+          <div style="font-size:13px;color:${active?'#1d4ed8':'#374151'};font-weight:${active?600:400};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${doc.title}</div>
           <div style="font-size:11px;color:#94a3b8;margin-top:2px">${date}</div>
         </div>
-        <button data-del="${doc.id}"
-          style="background:none;border:none;color:#fca5a5;cursor:pointer;font-size:15px;flex-shrink:0">🗑</button>
+        <button data-del="${doc.id}" style="background:none;border:none;color:#fca5a5;cursor:pointer;font-size:15px;flex-shrink:0">🗑</button>
       </div>
     </div>`;
   }).join('');
-
   el.querySelectorAll('.doc-item').forEach(item=>{
-    item.addEventListener('click',e=>{
-      if(e.target.dataset.del) return;
-      openDoc(item.dataset.id);
-    });
+    item.addEventListener('click',e=>{if(e.target.dataset.del)return;openDoc(item.dataset.id);});
   });
   el.querySelectorAll('[data-del]').forEach(btn=>{
-    btn.addEventListener('click',e=>{
-      e.stopPropagation();
-      deleteDoc(btn.dataset.del);
-    });
+    btn.addEventListener('click',e=>{e.stopPropagation();deleteDoc(btn.dataset.del);});
   });
 }
+
+function showNewDoc(){currentDocId=null;showPanel('new');hideErr('gen-err');$('doc-title').value='';$('elicitation-input').value='';renderDocsList();}
 
 function openDoc(id){
   const doc=userDocs.find(d=>d.id===id);
-  if(!doc) return;
-  currentDocId=id;
-  currentResult=doc.result;
-  activeSection='general';
+  if(!doc)return;
+  currentDocId=id;currentResult=doc.result;activeSection='general';
   $('view-title').textContent=doc.title;
-  const date=doc.createdAt?new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ'):'—';
-  $('view-date').textContent=date+' · '+(doc.userName||doc.userEmail||'');
-  renderSecTabs();
-  renderSecContent();
-  showPanel('view');
-  renderDocsList();
+  $('view-date').textContent=(doc.createdAt?new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ'):'—')+' · '+(doc.userName||doc.userEmail||'');
+  renderSecTabs();renderSecContent();showPanel('view');renderDocsList();
 }
 
 async function deleteDoc(id){
-  if(!confirm('Bu sənədi silmək istəyirsiniz?')) return;
+  if(!confirm('Bu sənədi silmək istəyirsiniz?'))return;
   await db.collection('documents').doc(id).delete();
   if(currentDocId===id){currentDocId=null;currentResult=null;}
   await loadDocs();
-  if(userDocs.length===0) showPanel('empty');
+  if(!userDocs.length)showPanel('empty');
 }
 
-// GENERATE
 async function startGenerate(){
-  const title=val('doc-title'), input=val('elicitation-input');
+  const title=val('doc-title'),input=val('elicitation-input');
   if(!title){showErr('gen-err','Sənəd adı daxil edin');return;}
   if(!input){showErr('gen-err','Elicitation qeydlərini daxil edin');return;}
-  if(!apiKey){showErr('gen-err','API Key tapılmadı. Admin ilə əlaqə saxlayın.');return;}
-  hideErr('gen-err');
-  showPanel('loading');
+  if(!apiKey){showErr('gen-err','Əvvəlcə API Key daxil edin');show('apikey-banner');return;}
+  hideErr('gen-err');showPanel('loading');
   try{
     const result=await generateTTS(input);
     const ref=await db.collection('documents').add({
-      uid:currentUser.uid,
-      userEmail:currentUser.email,
+      uid:currentUser.uid,userEmail:currentUser.email,
       userName:currentUser.displayName||currentUser.email,
-      title, result,
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      title,result,createdAt:firebase.firestore.FieldValue.serverTimestamp()
     });
     await loadDocs();
-    currentDocId=ref.id;
-    currentResult=result;
-    activeSection='general';
+    currentDocId=ref.id;currentResult=result;activeSection='general';
     $('view-title').textContent=title;
     $('view-date').textContent=new Date().toLocaleDateString('az-AZ');
-    renderSecTabs();
-    renderSecContent();
-    showPanel('view');
-    renderDocsList();
-  }catch(e){
-    showPanel('new');
-    showErr('gen-err','Xəta: '+e.message);
-  }
+    renderSecTabs();renderSecContent();showPanel('view');renderDocsList();
+  }catch(e){showPanel('new');showErr('gen-err','Xəta: '+e.message);}
 }
 
-function setProgress(msg,step){
-  $('prog-msg').textContent=msg;
-  $('prog-bar').style.width=((step/8)*100)+'%';
-  $('prog-step').textContent=step+' / 8';
-}
+function setProgress(msg,step){$('prog-msg').textContent=msg;$('prog-bar').style.width=((step/8)*100)+'%';$('prog-step').textContent=step+' / 8';}
 
 async function askClaude(sys,user){
   const res=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
-    headers:{
-      "content-type":"application/json",
-      "x-api-key":apiKey,
-      "anthropic-version":"2023-06-01",
-      "anthropic-dangerous-direct-browser-access":"true"
-    },
+    headers:{"content-type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
     body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:8000,system:sys,messages:[{role:"user",content:user}]})
   });
   const d=await res.json();
-  if(d.error) throw new Error(d.error.message);
+  if(d.error)throw new Error(d.error.message);
   return d.content.map(b=>b.text||"").join("").trim();
 }
 
-function safeJSON(text){
-  try{return JSON.parse(text.replace(/^```json\s*/i,"").replace(/^```\s*/i,"").replace(/```\s*$/i,"").trim());}catch{}
-  const a=text.match(/\[[\s\S]*\]/);if(a)try{return JSON.parse(a[0]);}catch{}
-  const o=text.match(/\{[\s\S]*\}/);if(o)try{return JSON.parse(o[0]);}catch{}
+function safeJSON(t){
+  try{return JSON.parse(t.replace(/^```json\s*/i,"").replace(/^```\s*/i,"").replace(/```\s*$/i,"").trim());}catch{}
+  const a=t.match(/\[[\s\S]*\]/);if(a)try{return JSON.parse(a[0]);}catch{}
+  const o=t.match(/\{[\s\S]*\}/);if(o)try{return JSON.parse(o[0]);}catch{}
   return null;
 }
 
 const SYS=`Sən bank IT Biznes Analitik köməkçisisən. Elicitation qeydlərinə əsasən TTS sənədi hazırlayırsan. Həmişə təmiz JSON qaytar, heç bir izahat yazma.`;
 
 async function generateTTS(input){
-  const date=new Date().toLocaleDateString("az-AZ");
-  const result={};
+  const date=new Date().toLocaleDateString("az-AZ"),result={};
   const calls=[
-    {msg:"📋 Ümumi məlumat və xülasə...",prompt:`Elicitation:\n${input}\n\nJSON doldur:\n{"documentTitle":"...","documentVersion":"1.0","documentDate":"${date}","summary":"..."}`},
-    {msg:"🔍 AS-IS, Biznes Ehtiyacı, TO-BE...",prompt:`Elicitation:\n${input}\n\nJSON:\n{"asis":"...","businessneed":"...","tobe":"..."}`},
-    {msg:"👥 Stakeholderlər və istifadəçilər...",prompt:`Elicitation:\n${input}\n\nJSON:\n{"stakeholders":[{"role":"...","name":"TBD","responsibility":"..."}],"users":[{"category":"...","description":"...","access":"..."}]}`},
-    {msg:"📖 Terminlər, abbreviaturalar, proses...",prompt:`Elicitation:\n${input}\n\nJSON:\n{"terms":[{"term":"...","definition":"..."}],"acronyms":[{"acronym":"...","description":"..."}],"process":"..."}`},
-    {msg:"🔗 İnteqrasiyalar...",prompt:`Elicitation:\n${input}\n\nJSON:\n{"external":[{"system":"...","type":"REST API","description":"..."}],"internal":[{"system":"...","type":"...","description":"..."}],"dependencies":[{"item":"...","description":"..."}]}`},
-    {msg:"⚙️ Servis detalları...",prompt:`Elicitation:\n${input}\n\nJSON (bodyExample sadə string):\n{"method":"POST","url":"/api/v1/...","description":"...","bodyExample":"field: value","successResponse":"status: success","errorResponse":"code: 400","errorCodes":[{"code":"400","description":"..."}]}`},
-    {msg:"✅ Funksional və qeyri-funksional tələblər...",prompt:`Elicitation:\n${input}\n\nJSON:\n{"functional":[{"id":"FR-001","requirement":"...","priority":"High"}],"nonfunctional":[{"id":"NFR-001","requirement":"...","category":"Performance"}]}`},
-    {msg:"⚠️ Risklər və qəbul meyarları...",prompt:`Elicitation:\n${input}\n\nJSON:\n{"technical":[{"risk":"...","impact":"...","mitigation":"..."}],"business":[{"risk":"...","impact":"...","mitigation":"..."}],"acceptance":[{"id":"AC-001","criteria":"...","testCase":"..."}]}`},
+    {msg:"📋 Ümumi məlumat və xülasə...",p:`Elicitation:\n${input}\n\nJSON:\n{"documentTitle":"...","documentVersion":"1.0","documentDate":"${date}","summary":"..."}`},
+    {msg:"🔍 AS-IS, Biznes Ehtiyacı, TO-BE...",p:`Elicitation:\n${input}\n\nJSON:\n{"asis":"...","businessneed":"...","tobe":"..."}`},
+    {msg:"👥 Stakeholderlər və istifadəçilər...",p:`Elicitation:\n${input}\n\nJSON:\n{"stakeholders":[{"role":"...","name":"TBD","responsibility":"..."}],"users":[{"category":"...","description":"...","access":"..."}]}`},
+    {msg:"📖 Terminlər, abbreviaturalar, proses...",p:`Elicitation:\n${input}\n\nJSON:\n{"terms":[{"term":"...","definition":"..."}],"acronyms":[{"acronym":"...","description":"..."}],"process":"..."}`},
+    {msg:"🔗 İnteqrasiyalar...",p:`Elicitation:\n${input}\n\nJSON:\n{"external":[{"system":"...","type":"REST API","description":"..."}],"internal":[{"system":"...","type":"...","description":"..."}],"dependencies":[{"item":"...","description":"..."}]}`},
+    {msg:"⚙️ Servis detalları...",p:`Elicitation:\n${input}\n\nJSON (bodyExample sadə string):\n{"method":"POST","url":"/api/v1/...","description":"...","bodyExample":"field: value","successResponse":"status: success","errorResponse":"code: 400","errorCodes":[{"code":"400","description":"..."}]}`},
+    {msg:"✅ Funksional və qeyri-funksional tələblər...",p:`Elicitation:\n${input}\n\nJSON:\n{"functional":[{"id":"FR-001","requirement":"...","priority":"High"}],"nonfunctional":[{"id":"NFR-001","requirement":"...","category":"Performance"}]}`},
+    {msg:"⚠️ Risklər və qəbul meyarları...",p:`Elicitation:\n${input}\n\nJSON:\n{"technical":[{"risk":"...","impact":"...","mitigation":"..."}],"business":[{"risk":"...","impact":"...","mitigation":"..."}],"acceptance":[{"id":"AC-001","criteria":"...","testCase":"..."}]}`},
   ];
   for(let i=0;i<calls.length;i++){
     setProgress(calls[i].msg,i+1);
-    const raw=await askClaude(SYS,calls[i].prompt);
-    const p=safeJSON(raw);
-    if(!p) continue;
+    const p=safeJSON(await askClaude(SYS,calls[i].p));
+    if(!p)continue;
     if(i===0){result.general={documentTitle:p.documentTitle,documentVersion:p.documentVersion,documentDate:date,itBusinessAnalysts:currentUser.displayName||currentUser.email,jiraLink:"—"};result.summary=p.summary;}
     else if(i===1){result.asis=p.asis;result.businessneed=p.businessneed;result.tobe=p.tobe;}
     else if(i===2){result.stakeholders=p.stakeholders||[];result.users=p.users||[];}
@@ -506,96 +410,46 @@ async function generateTTS(input){
   return result;
 }
 
-// SECTION RENDER
 function renderSecTabs(){
   $('sec-tabs').innerHTML=TABS.map(t=>`
-    <div data-key="${t.key}" class="sec-tab"
-      style="padding:9px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;
-      background:${activeSection===t.key?'#eff6ff':'white'};
-      border-left:${activeSection===t.key?'3px solid #2563eb':'3px solid transparent'}">
+    <div data-key="${t.key}" class="sec-tab" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:${activeSection===t.key?'#eff6ff':'white'};border-left:${activeSection===t.key?'3px solid #2563eb':'3px solid transparent'}">
       <span style="font-size:10px;color:#94a3b8;font-weight:600;margin-right:4px">${t.code}</span>
       <span style="font-size:12px;color:${activeSection===t.key?'#1d4ed8':'#374151'};font-weight:${activeSection===t.key?600:400}">${t.label}</span>
     </div>`).join('');
   $('sec-tabs').querySelectorAll('.sec-tab').forEach(tab=>{
-    tab.addEventListener('click',()=>{
-      activeSection=tab.dataset.key;
-      renderSecTabs();
-      renderSecContent();
-    });
+    tab.addEventListener('click',()=>{activeSection=tab.dataset.key;renderSecTabs();renderSecContent();});
   });
 }
 
-function renderSecContent(){
-  $('sec-content').innerHTML=getSectionHTML(activeSection, currentResult?currentResult[activeSection]:null);
-}
+function renderSecContent(){$('sec-content').innerHTML=getSectionHTML(activeSection,currentResult?currentResult[activeSection]:null);}
 
-function box(label,value){
-  return `<div style="margin-bottom:14px">
-    <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">${label}</div>
-    <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:14px;color:#1e293b;border:1px solid #e2e8f0;white-space:pre-wrap;line-height:1.6">${value||'—'}</div>
-  </div>`;
-}
+function box(l,v){return `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">${l}</div><div style="background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:14px;color:#1e293b;border:1px solid #e2e8f0;white-space:pre-wrap;line-height:1.6">${v||'—'}</div></div>`;}
 
 function tbl(heads,rows){
   const ths=heads.map(h=>`<th style="padding:10px 14px;color:white;text-align:left;font-weight:600;font-size:13px">${h}</th>`).join('');
-  const trs=(!rows||rows.length===0)
-    ?`<tr><td colspan="${heads.length}" style="padding:12px 14px;color:#94a3b8;font-style:italic;font-size:13px">Məlumat yoxdur</td></tr>`
-    :rows.map((row,i)=>`<tr style="background:${i%2===0?'white':'#f8fafc'}">${row.map(c=>`<td style="padding:10px 14px;color:#374151;border-top:1px solid #e2e8f0;font-size:13px">${c||'—'}</td>`).join('')}</tr>`).join('');
-  return `<div style="overflow-x:auto;margin-bottom:16px;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden">
-    <table style="width:100%;border-collapse:collapse">
-      <thead><tr style="background:#1e3a5f">${ths}</tr></thead>
-      <tbody>${trs}</tbody>
-    </table></div>`;
+  const trs=(!rows||!rows.length)?`<tr><td colspan="${heads.length}" style="padding:12px 14px;color:#94a3b8;font-style:italic;font-size:13px">Məlumat yoxdur</td></tr>`:rows.map((r,i)=>`<tr style="background:${i%2===0?'white':'#f8fafc'}">${r.map(c=>`<td style="padding:10px 14px;color:#374151;border-top:1px solid #e2e8f0;font-size:13px">${c||'—'}</td>`).join('')}</tr>`).join('');
+  return `<div style="overflow-x:auto;margin-bottom:16px;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden"><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#1e3a5f">${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
 }
 
 function getSectionHTML(key,d){
-  if(!d && !['integrations','risks'].includes(key)) return '<div style="color:#94a3b8;font-size:13px">Məlumat yoxdur</div>';
   switch(key){
-    case 'general': return box('Sənəd Adı',d?.documentTitle)+`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">${box('Versiya',d?.documentVersion)}${box('Tarix',d?.documentDate)}</div>`+box('IT Biznes Analitik',d?.itBusinessAnalysts)+box('Jira Link',d?.jiraLink);
-    case 'stakeholders': return tbl(['Rol','Ad','Məsuliyyət'],(d||[]).map(s=>[s.role,s.name,s.responsibility]));
-    case 'summary': return box('Xülasə',d);
-    case 'terms': return tbl(['Termin','Tərif'],(d||[]).map(t=>[t.term,t.definition]));
-    case 'acronyms': return tbl(['Abbreviatura','Açıqlama'],(d||[]).map(a=>[a.acronym,a.description]));
-    case 'asis': return box('Cari Vəziyyət',d);
-    case 'businessneed': return box('Biznes Ehtiyacı',d);
-    case 'tobe': return box('Olmalı Vəziyyət',d);
-    case 'users': return tbl(['Kateqoriya','Təsvir','Giriş'],(d||[]).map(u=>[u.category,u.description,u.access]));
-    case 'process': return box('Proses Axışı',d);
-    case 'integrations': return `
-      <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:14px">9.1 Xarici İnteqrasiyalar</div>
-      ${tbl(['Sistem','Növ','Təsvir'],(d?.external||[]).map(i=>[i.system,i.type,i.description]))}
-      <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">9.2 Daxili İnteqrasiyalar</div>
-      ${tbl(['Sistem','Növ','Təsvir'],(d?.internal||[]).map(i=>[i.system,i.type,i.description]))}
-      <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">9.3 Texniki Asılılıqlar</div>
-      ${tbl(['Maddə','Təsvir'],(d?.dependencies||[]).map(i=>[i.item,i.description]))}`;
-    case 'service': return `
-      <div style="display:grid;grid-template-columns:100px 1fr;gap:14px;margin-bottom:14px">
-        <div style="background:#eff6ff;border-radius:8px;padding:12px;border:1px solid #bfdbfe;text-align:center">
-          <div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">METHOD</div>
-          <div style="font-size:18px;font-weight:800;color:#2563eb">${d?.method||'POST'}</div>
-        </div>
-        <div style="background:#f8fafc;border-radius:8px;padding:12px;border:1px solid #e2e8f0">
-          <div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">URL</div>
-          <div style="font-size:13px;color:#374151;font-family:monospace">${d?.url||''}</div>
-          <div style="font-size:12px;color:#64748b;margin-top:4px">${d?.description||''}</div>
-        </div>
-      </div>
-      ${[['📤 Request Body',d?.bodyExample,'#e2e8f0'],['✅ Success (200)',d?.successResponse,'#86efac'],['❌ Error (400)',d?.errorResponse,'#fca5a5']].map(([l,v,c])=>`
-        <div style="margin-bottom:14px">
-          <div style="font-weight:700;font-size:13px;color:#1e3a5f;margin-bottom:6px">${l}</div>
-          <pre style="background:#0f172a;color:${c};border-radius:8px;padding:14px;font-size:12px;overflow-x:auto;margin:0;white-space:pre-wrap">${v||''}</pre>
-        </div>`).join('')}
-      <div style="font-weight:700;font-size:13px;color:#1e3a5f;margin-bottom:8px">Xəta Kodları</div>
-      ${tbl(['Kod','Təsvir'],(d?.errorCodes||[]).map(e=>[e.code,e.description]))}`;
-    case 'functional': return tbl(['ID','Tələb','Prioritet'],(d||[]).map(f=>[f.id,f.requirement,f.priority]));
-    case 'nonfunctional': return tbl(['ID','Tələb','Kateqoriya'],(d||[]).map(f=>[f.id,f.requirement,f.category]));
-    case 'risks': return `
-      <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:14px">12.1 Texniki Məhdudiyyətlər</div>
-      ${tbl(['Risk','Təsir','Azaltma'],(currentResult?.risks?.technical||[]).map(r=>[r.risk,r.impact,r.mitigation]))}
-      <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">12.2 Biznes Məhdudiyyətləri</div>
-      ${tbl(['Risk','Təsir','Azaltma'],(currentResult?.risks?.business||[]).map(r=>[r.risk,r.impact,r.mitigation]))}`;
-    case 'acceptance': return tbl(['ID','Meyar','Test Ssenarisi'],(d||[]).map(a=>[a.id,a.criteria,a.testCase]));
-    default: return '';
+    case 'general':return box('Sənəd Adı',d?.documentTitle)+`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">${box('Versiya',d?.documentVersion)}${box('Tarix',d?.documentDate)}</div>`+box('IT Biznes Analitik',d?.itBusinessAnalysts)+box('Jira Link',d?.jiraLink);
+    case 'stakeholders':return tbl(['Rol','Ad','Məsuliyyət'],(d||[]).map(s=>[s.role,s.name,s.responsibility]));
+    case 'summary':return box('Xülasə',d);
+    case 'terms':return tbl(['Termin','Tərif'],(d||[]).map(t=>[t.term,t.definition]));
+    case 'acronyms':return tbl(['Abbreviatura','Açıqlama'],(d||[]).map(a=>[a.acronym,a.description]));
+    case 'asis':return box('Cari Vəziyyət',d);
+    case 'businessneed':return box('Biznes Ehtiyacı',d);
+    case 'tobe':return box('Olmalı Vəziyyət',d);
+    case 'users':return tbl(['Kateqoriya','Təsvir','Giriş'],(d||[]).map(u=>[u.category,u.description,u.access]));
+    case 'process':return box('Proses Axışı',d);
+    case 'integrations':return `<div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:14px">9.1 Xarici İnteqrasiyalar</div>${tbl(['Sistem','Növ','Təsvir'],(d?.external||[]).map(i=>[i.system,i.type,i.description]))}<div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">9.2 Daxili İnteqrasiyalar</div>${tbl(['Sistem','Növ','Təsvir'],(d?.internal||[]).map(i=>[i.system,i.type,i.description]))}<div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">9.3 Texniki Asılılıqlar</div>${tbl(['Maddə','Təsvir'],(d?.dependencies||[]).map(i=>[i.item,i.description]))}`;
+    case 'service':return `<div style="display:grid;grid-template-columns:100px 1fr;gap:14px;margin-bottom:14px"><div style="background:#eff6ff;border-radius:8px;padding:12px;border:1px solid #bfdbfe;text-align:center"><div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">METHOD</div><div style="font-size:18px;font-weight:800;color:#2563eb">${d?.method||'POST'}</div></div><div style="background:#f8fafc;border-radius:8px;padding:12px;border:1px solid #e2e8f0"><div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">URL</div><div style="font-size:13px;color:#374151;font-family:monospace">${d?.url||''}</div><div style="font-size:12px;color:#64748b;margin-top:4px">${d?.description||''}</div></div></div>${[['📤 Request Body',d?.bodyExample,'#e2e8f0'],['✅ Success (200)',d?.successResponse,'#86efac'],['❌ Error (400)',d?.errorResponse,'#fca5a5']].map(([l,v,c])=>`<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;color:#1e3a5f;margin-bottom:6px">${l}</div><pre style="background:#0f172a;color:${c};border-radius:8px;padding:14px;font-size:12px;overflow-x:auto;margin:0;white-space:pre-wrap">${v||''}</pre></div>`).join('')}<div style="font-weight:700;font-size:13px;color:#1e3a5f;margin-bottom:8px">Xəta Kodları</div>${tbl(['Kod','Təsvir'],(d?.errorCodes||[]).map(e=>[e.code,e.description]))}`;
+    case 'functional':return tbl(['ID','Tələb','Prioritet'],(d||[]).map(f=>[f.id,f.requirement,f.priority]));
+    case 'nonfunctional':return tbl(['ID','Tələb','Kateqoriya'],(d||[]).map(f=>[f.id,f.requirement,f.category]));
+    case 'risks':return `<div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:14px">12.1 Texniki Məhdudiyyətlər</div>${tbl(['Risk','Təsir','Azaltma'],(currentResult?.risks?.technical||[]).map(r=>[r.risk,r.impact,r.mitigation]))}<div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">12.2 Biznes Məhdudiyyətləri</div>${tbl(['Risk','Təsir','Azaltma'],(currentResult?.risks?.business||[]).map(r=>[r.risk,r.impact,r.mitigation]))}`;
+    case 'acceptance':return tbl(['ID','Meyar','Test Ssenarisi'],(d||[]).map(a=>[a.id,a.criteria,a.testCase]));
+    default:return '<div style="color:#94a3b8;font-size:13px">Məlumat yoxdur</div>';
   }
 }
 </script>
