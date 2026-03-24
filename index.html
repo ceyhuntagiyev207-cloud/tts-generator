@@ -185,7 +185,7 @@ const db = firebase.firestore();
 
 // STATE
 let currentUser = null;
-let apiKey = "";
+let apiKey = "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";
 let currentDocId = null;
 let currentResult = null;
 let activeSection = "general";
@@ -246,7 +246,6 @@ auth.onAuthStateChanged(async user=>{
     hide('page-login');
     show('page-app');
     $('user-display').textContent=user.displayName||user.email;
-    await loadApiKey();
     await loadDocs();
   } else {
     currentUser=null;
