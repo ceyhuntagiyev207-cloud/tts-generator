@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bank Kontekst Bazası Roadmap</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#f1f5f9;min-height:100vh;padding:24px}
+.phase{background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.06);border:1px solid #e2e8f0;margin-bottom:12px;transition:border-color 0.2s}
+.phase-header{padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:14px}
+.phase-header:hover{background:#f8fafc}
+.phase-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.phase-content{padding:0 20px 20px;border-top:1px solid #e2e8f0;display:none}
+.phase-content.open{display:block}
+.item{display:flex;gap:12px;background:#f8fafc;border-radius:8px;padding:10px 14px;border:1px solid #e2e8f0;margin-bottom:8px}
+.dot{width:6px;height:6px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.badge{font-size:11px;border-radius:20px;padding:2px 10px;font-weight:700}
+.arrow{font-size:18px;color:#94a3b8;transition:transform 0.2s;margin-left:auto}
+.arrow.open{transform:rotate(180deg)}
+.summary-card{background:rgba(255,255,255,0.15);border-radius:10px;padding:12px 18px;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:16px;padding:28px 32px;color:white;margin-bottom:24px">
+  <div style="font-size:13px;opacity:0.8;margin-bottom:6px">TTS Generator · Kontekst Bazası</div>
+  <div style="font-size:24px;font-weight:800;margin-bottom:8px">Bank Ekosistemi Məlumat Roadmap-ı</div>
+  <div style="font-size:14px;opacity:0.85;max-width:600px;line-height:1.6">
+    Bu məlumatları Claude-a yüklədikdən sonra hər Elicitation qeydindən çox daha güclü, real sistem detalları ilə dolu TTS sənədi avtomatik yaranacaq.
+  </div>
+  <div style="display:flex;gap:20px;margin-top:20px;flex-wrap:wrap">
+    <div class="summary-card"><div style="font-size:20px">📁</div><div style="font-size:22px;font-weight:800">6</div><div style="font-size:11px;opacity:0.85">Məlumat bloku</div></div>
+    <div class="summary-card"><div style="font-size:20px">📊</div><div style="font-size:22px;font-weight:800">30+</div><div style="font-size:11px;opacity:0.85">Alt kateqoriya</div></div>
+    <div class="summary-card"><div style="font-size:20px">🤖</div><div style="font-size:22px;font-weight:800">100%</div><div style="font-size:11px;opacity:0.85">Claude konteksti</div></div>
+    <div class="summary-card"><div style="font-size:20px">📄</div><div style="font-size:22px;font-weight:800">16</div><div style="font-size:11px;opacity:0.85">TTS bölməsi dolur</div></div>
+  </div>
+</div>
+
+<!-- Phases -->
+<div id="phases"></div>
+
+<!-- Bottom Note -->
+<div style="background:white;border-radius:12px;padding:20px;margin-top:16px;box-shadow:0 1px 6px rgba(0,0,0,0.06);border-left:4px solid #2563eb">
+  <div style="font-weight:700;font-size:14px;color:#1e3a5f;margin-bottom:8px">🚀 Növbəti addım nədir?</div>
+  <div style="font-size:13px;color:#475569;line-height:1.7">
+    Bu məlumatları topladıqdan sonra hər birini ayrıca sənəd kimi (Excel, Word, JSON) hazırlayacağıq.
+    Sonra TTS Generator-a <strong>"Bank Konteksti"</strong> bölməsi əlavə edəcəyik — BA bir dəfə yükləyir,
+    Claude hər TTS-də bu bazadan istifadə edir. Nəticədə Elicitation qeydindən <strong>real API URL-ləri,
+    mövcud servis adları, real xəta kodları, bank qaydaları</strong> olan professional TTS sənədi yaranır.
+  </div>
+</div>
+
+<script>
+const phases = [
+  {
+    id:1, icon:"🏦", color:"#1e3a5f", light:"#eff6ff", border:"#bfdbfe",
+    title:"Bank Ekosistemi Xəritəsi", subtitle:"Core sistemlər və platformalar",
+    status:"Başlanğıc", statusColor:"#f59e0b",
+    description:"Bankın bütün IT sistemlərinin kataloqu. Claude bu məlumatla hər TTS-də hansı sistemin təsirlənəcəyini avtomatik müəyyən edəcək.",
+    items:[
+      {l:"Core Banking System (CBS)", d:"Sistem adı, vendor, version, əsas modullar (hesab, kredit, depozit, kartlar)"},
+      {l:"Mobile Banking", d:"iOS/Android app versiyaları, istifadə olunan framework, API gateway"},
+      {l:"Internet Banking", d:"Platform, authentication mexanizmi, session management"},
+      {l:"Card Management System", d:"Vendor, dəstəklənən kart növləri, PIN, limit idarəetməsi"},
+      {l:"AML/Fraud Sistemləri", d:"Hansı sistem, hansı hadisələrdə trigger olur, response vaxtı"},
+      {l:"CRM", d:"Müştəri məlumat strukturu, segment, status tipləri"},
+      {l:"Document Management", d:"Sənəd saxlama sistemi, format dəstəyi, OCR imkanları"},
+      {l:"Notification Gateway", d:"SMS, Push, Email provayderləri, limit, template strukturu"},
+    ],
+    output:"Sistem kataloqu sənədi (JSON/Excel formatında)"
+  },
+  {
+    id:2, icon:"🔌", color:"#1d4ed8", light:"#eff6ff", border:"#93c5fd",
+    title:"İnteqrasiya Arxitekturası", subtitle:"API-lər, middleware, protokollar",
+    status:"Kritik", statusColor:"#ef4444",
+    description:"Sistemlər arası əlaqə xəritəsi. Claude bu məlumatla TTS-in inteqrasiya bölməsini real API detalları ilə dolduracaq.",
+    items:[
+      {l:"API Gateway", d:"Hansı gateway (Kong, Apigee, custom), authentication tipi (JWT, OAuth, Basic), rate limit"},
+      {l:"ESB / Middleware", d:"MQ, Kafka, RabbitMQ — hansı sistemlər arası, mesaj formatı"},
+      {l:"Mövcud API kataloqu", d:"Hər servis üçün: endpoint, method, request/response strukturu, error kodları"},
+      {l:"Database arxitekturası", d:"Oracle/PostgreSQL/MongoDB — hansı sistem hansı DB işlədir"},
+      {l:"Xarici inteqrasiyalar", d:"SWIFT, Visa/MC, FINA, DOST, vergi, Mərkəzi Bank API-ları"},
+      {l:"Legacy sistemlər", d:"Köhnə sistemlərin API-si varmı, fayl transfer (SFTP) işlədilirmi"},
+    ],
+    output:"API kataloqu + inteqrasiya xəritəsi"
+  },
+  {
+    id:3, icon:"⚙️", color:"#7c3aed", light:"#f5f3ff", border:"#c4b5fd",
+    title:"Biznes Qaydaları və Limitlər", subtitle:"Mövcud məhdudiyyətlər və validasiyalar",
+    status:"Vacib", statusColor:"#f59e0b",
+    description:"Bankın mövcud biznes qaydaları. Claude yeni TTS yazanda bu qaydaları nəzərə alıb avtomatik constraint-lər və validation-lar əlavə edəcək.",
+    items:[
+      {l:"Müştəri onboarding qaydaları", d:"KYC tələbləri, sənəd növləri, təsdiq addımları, müddət limiti"},
+      {l:"Əməliyyat limitləri", d:"Gündəlik, aylıq transfer limitləri, kart limiti, kredit limiti hesablanması"},
+      {l:"Autentifikasiya qaydaları", d:"OTP müddəti, yenidən cəhd sayı, session timeout, biometrik tələblər"},
+      {l:"Compliance tələbləri", d:"AML hədd dəyərləri, hesabat öhdəlikləri, data saxlama müddəti"},
+      {l:"Xəta idarəetmə standartları", d:"Mövcud error kod siyahısı, retry məntiqi, fallback ssenariləri"},
+      {l:"SLA tələbləri", d:"Sistem cavab vaxtı, uptime tələbi, batch processing vaxtları"},
+    ],
+    output:"Biznes qaydaları kataloqu"
+  },
+  {
+    id:4, icon:"👥", color:"#059669", light:"#f0fdf4", border:"#86efac",
+    title:"İstifadəçi Rolları və Sistemlər", subtitle:"Kim, nə üçün, hansı sistemdə",
+    status:"Vacib", statusColor:"#f59e0b",
+    description:"Bütün istifadəçi kateqoriyaları və onların sistem girişi. Claude TTS-in stakeholder və user bölmələrini bu məlumatla dolduracaq.",
+    items:[
+      {l:"Müştəri seqmentləri", d:"Retail, SME, Corporate — hər birinin fərqli funksionallığı, giriş hüquqları"},
+      {l:"Bank əməkdaşı rolları", d:"Operator, supervisor, administrator — hər rol üçün icazələr"},
+      {l:"Back-office rolları", d:"Risk, compliance, mühasibat — hansı sistemlərə girişi var"},
+      {l:"Xarici istifadəçilər", d:"Agent, partner, müxbir bank — girişin məhdudiyyətləri"},
+    ],
+    output:"İstifadəçi rol matrisi"
+  },
+  {
+    id:5, icon:"📋", color:"#dc2626", light:"#fef2f2", border:"#fca5a5",
+    title:"Mövcud Proses Axışları", subtitle:"AS-IS BPMN və proses sənədləri",
+    status:"Tövsiyə", statusColor:"#22c55e",
+    description:"Mövcud iş proseslərinin xəritəsi. Claude yeni TTS-də AS-IS vəziyyəti daha dəqiq analiz edəcək, boşluqları tapacaq.",
+    items:[
+      {l:"Onboarding prosesləri", d:"Retail/SME/Corporate üçün mövcud addımlar, sistemlər, təsdiq zənciri"},
+      {l:"Kredit prosesləri", d:"Müraciətdən verilməyə qədər addımlar, scoring, committee"},
+      {l:"Kart prosesləri", d:"Kart açılması, blok, limit dəyişikliyi prosesləri"},
+      {l:"Şikayət prosesləri", d:"Müştəri şikayəti qəbulundan həllinə qədər axış"},
+    ],
+    output:"BPMN sənədlər kitabxanası"
+  },
+  {
+    id:6, icon:"🔒", color:"#374151", light:"#f9fafb", border:"#d1d5db",
+    title:"Təhlükəsizlik Standartları", subtitle:"Security framework və tələblər",
+    status:"Tövsiyə", statusColor:"#22c55e",
+    description:"Bankın təhlükəsizlik tələbləri. Claude TTS-in non-functional requirements bölməsini bu standartlara uyğun dolduracaq.",
+    items:[
+      {l:"Data encryption standartları", d:"Transit və rest-də şifrələmə tələbləri, sertifikat növləri"},
+      {l:"PCI-DSS tələbləri", d:"Kart məlumatlarının saxlanması, ötürülməsi qaydaları"},
+      {l:"GDPR/məxfilik", d:"Şəxsi məlumatların idarəsi, silmə hüququ, audit log tələbləri"},
+      {l:"Penetration test tələbləri", d:"Yeni sistemlər üçün security review prosesi"},
+    ],
+    output:"Security checklist"
+  }
+];
+
+const container = document.getElementById('phases');
+
+phases.forEach(phase => {
+  const div = document.createElement('div');
+  div.className = 'phase';
+  div.innerHTML = `
+    <div class="phase-header" onclick="toggle(${phase.id})">
+      <div class="phase-icon" style="background:${phase.color}">${phase.icon}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+          <span class="badge" style="background:#f1f5f9;color:#64748b">Faza ${phase.id}</span>
+          <span class="badge" style="background:${phase.statusColor}20;color:${phase.statusColor}">${phase.status}</span>
+        </div>
+        <div style="font-weight:700;font-size:15px;color:#1e293b">${phase.title}</div>
+        <div style="font-size:13px;color:#64748b">${phase.subtitle}</div>
+      </div>
+      <div class="arrow" id="arrow-${phase.id}">▼</div>
+    </div>
+    <div class="phase-content" id="content-${phase.id}">
+      <div style="background:${phase.light};border-radius:8px;padding:12px 14px;margin:16px 0;font-size:13px;color:#374151;line-height:1.6;border:1px solid ${phase.border}">
+        💡 ${phase.description}
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#64748b;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">Lazım olan məlumatlar:</div>
+      ${phase.items.map(item => `
+        <div class="item">
+          <div class="dot" style="background:${phase.color}"></div>
+          <div>
+            <div style="font-weight:600;font-size:13px;color:#1e293b">${item.l}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">${item.d}</div>
+          </div>
+        </div>`).join('')}
+      <div style="margin-top:14px;background:${phase.color}15;border:1px solid ${phase.border};border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">📤</span>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase">Çıxış formatı</div>
+          <div style="font-size:13px;color:#374151;font-weight:600">${phase.output}</div>
+        </div>
+      </div>
+    </div>`;
+  container.appendChild(div);
+});
+
+function toggle(id) {
+  const content = document.getElementById('content-' + id);
+  const arrow = document.getElementById('arrow-' + id);
+  const phase = phases.find(p => p.id === id);
+  const isOpen = content.classList.contains('open');
+  content.classList.toggle('open');
+  arrow.classList.toggle('open');
+  const phaseEl = content.closest('.phase');
+  phaseEl.style.borderColor = isOpen ? '#e2e8f0' : phase.border;
+}
+</script>
+</body>
+</html>
