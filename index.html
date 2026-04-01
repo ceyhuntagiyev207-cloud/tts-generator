@@ -512,9 +512,14 @@ function downloadDoc() {
 }
 
 function renderSecContent() {
-  $('sec-content').innerHTML = getSectionHTML(activeSection, currentResult?currentResult[activeSection]:null);
-  if (activeSection === 'modelling') {
-    setTimeout(() => mermaid.run({ nodes: document.querySelectorAll('.mermaid') }), 100);
+  try {
+    const d = currentResult ? currentResult[activeSection] : null;
+    $('sec-content').innerHTML = getSectionHTML(activeSection, d);
+    if (activeSection === 'modelling') {
+      setTimeout(() => mermaid.run({ nodes: document.querySelectorAll('.mermaid') }), 100);
+    }
+  } catch(e) {
+    $('sec-content').innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:12px">Məlumat yüklənə bilmədi.</div>';
   }
 }
 
