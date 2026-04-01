@@ -91,17 +91,7 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
     </div>
   </div>
 
-  <!-- API Key Banner -->
-  <div id="apikey-banner" style="background:#fffbeb;border-bottom:2px solid #fbbf24;padding:12px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-    <span style="font-size:16px">🔑</span>
-    <div style="flex:1;min-width:200px">
-      <div style="font-weight:700;font-size:13px;color:#92400e">Anthropic API Key daxil edin</div>
-      <div style="font-size:12px;color:#b45309">console.anthropic.com → API Keys → Create Key. Key yalnız sizin cihazda saxlanır.</div>
-    </div>
-    <input id="apikey-input" type="password" placeholder="sk-ant-..."
-      style="border:1.5px solid #fbbf24;border-radius:8px;padding:8px 12px;font-size:13px;width:300px"/>
-    <button id="btn-save-key" style="background:#f59e0b;color:white;border:none;border-radius:8px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer">Saxla</button>
-  </div>
+  <div id="apikey-banner" class="hidden"></div>
 
   <div style="padding:20px;max-width:1200px;margin:0 auto">
     <div style="display:flex;gap:20px;align-items:flex-start">
@@ -190,7 +180,7 @@ const auth = firebase.auth();
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 const db = firebase.firestore();
 
-let currentUser=null, apiKey="", currentDocId=null, currentResult=null, activeSection="general", userDocs=[];
+let currentUser=null, apiKey="AIzaSyCzmpcmuh3eu02dFMyrAwaUc6HEU1kZdNQ", currentDocId=null, currentResult=null, activeSection="general", userDocs=[];
 
 const TABS=[
   {key:"general",code:"1.1",label:"Ümumi Məlumat"},
@@ -362,15 +352,18 @@ async function startGenerate(){
 
 function setProgress(msg,step){$('prog-msg').textContent=msg;$('prog-bar').style.width=((step/8)*100)+'%';$('prog-step').textContent=step+' / 8';}
 
-async function askClaude(sys,user){
-  const res=await fetch("https://api.anthropic.com/v1/messages",{
-    method:"POST",
-    headers:{"content-type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:8000,system:sys,messages:[{role:"user",content:user}]})
+async function askClaude(sys, user) {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: sys + "\n\n" + user }] }],
+      generationConfig: { temperature: 0.3, maxOutputTokens: 8000 }
+    })
   });
-  const d=await res.json();
-  if(d.error)throw new Error(d.error.message);
-  return d.content.map(b=>b.text||"").join("").trim();
+  const d = await res.json();
+  if (d.error) throw new Error(d.error.message);
+  return d.candidates[0].content.parts[0].text.trim();
 }
 
 function safeJSON(t){
