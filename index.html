@@ -441,10 +441,13 @@ const IAD_TABS = [
 function renderSecTabs() {
   const tabs = currentDocType === 'iad' ? IAD_TABS : TABS;
   $('sec-tabs').innerHTML = tabs.map(t => `
-    <div onclick="selectSec('${t.key}')" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:${activeSection===t.key?'#eff6ff':'white'};border-left:${activeSection===t.key?'3px solid #2563eb':'3px solid transparent'}">
+    <div data-key="${t.key}" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:${activeSection===t.key?'#eff6ff':'white'};border-left:${activeSection===t.key?'3px solid #2563eb':'3px solid transparent'}">
       <span style="font-size:10px;color:#94a3b8;font-weight:600;margin-right:4px">${t.code}</span>
       <span style="font-size:12px;color:${activeSection===t.key?'#1d4ed8':'#374151'};font-weight:${activeSection===t.key?600:400}">${t.label}</span>
     </div>`).join('');
+  $('sec-tabs').querySelectorAll('[data-key]').forEach(el => {
+    el.addEventListener('click', () => selectSec(el.dataset.key));
+  });
 }
 
 function downloadDoc() {
