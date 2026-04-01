@@ -330,12 +330,17 @@ function renderDocGroup(elId, docs) {
 function openDoc(id) {
   const doc = [...userDocs, ...userIADs].find(d => d.id === id);
   if (!doc) return;
-  currentDocId = id; currentResult = doc.result; currentDocType = doc.type || 'tts';
+  currentDocId = id;
+  currentResult = doc.result;
+  currentDocType = doc.type || 'tts';
   activeSection = currentDocType === 'iad' ? 'iad_general' : 'general';
   $('view-title').textContent = doc.title;
   const date = doc.createdAt ? new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ') : '—';
   $('view-date').textContent = date + ' · ' + (doc.userName||'') + (currentDocType === 'iad' ? ' · İAD' : ' · TTS');
-  renderSecTabs(); renderSecContent(); showPanel('view'); renderDocsList();
+  showPanel('view');
+  renderDocsList();
+  renderSecTabs();
+  renderSecContent();
 }
 
 async function deleteDoc(id) {
