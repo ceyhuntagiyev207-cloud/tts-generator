@@ -41,10 +41,10 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
         <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">ŞİFRƏ</label>
         <input id="login-pass" type="password" placeholder="••••••••" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:11px 14px;font-size:14px"/>
       </div>
-      <button class="btn-primary" style="width:100%;font-size:15px" id="btn-login">Daxil ol</button>
+      <button class="btn-primary" style="width:100%;font-size:15px" id="btn-login" onclick="doLogin()">Daxil ol</button>
       <div style="text-align:center;margin-top:16px">
         <span style="font-size:13px;color:#64748b">Hesabın yoxdur? </span>
-        <a href="#" id="go-register" style="font-size:13px;color:#2563eb;font-weight:600;text-decoration:none">Qeydiyyat</a>
+        <a href="#" onclick="showRegister();return false;" style="font-size:13px;color:#2563eb;font-weight:600;text-decoration:none">Qeydiyyat</a>
       </div>
       <div id="login-err" class="err hidden"></div>
     </div>
@@ -62,9 +62,9 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
         <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">ŞİFRƏ</label>
         <input id="reg-pass" type="password" placeholder="minimum 6 simvol" style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:11px 14px;font-size:14px"/>
       </div>
-      <button class="btn-primary" style="width:100%;font-size:15px" id="btn-register">Qeydiyyatdan keç</button>
+      <button class="btn-primary" style="width:100%;font-size:15px" id="btn-register" onclick="doRegister()">Qeydiyyatdan keç</button>
       <div style="text-align:center;margin-top:16px">
-        <a href="#" id="go-login" style="font-size:13px;color:#2563eb;font-weight:600;text-decoration:none">← Geri qayıt</a>
+        <a href="#" onclick="showLogin();return false;" style="font-size:13px;color:#2563eb;font-weight:600;text-decoration:none">← Geri qayıt</a>
       </div>
       <div id="reg-err" class="err hidden"></div>
     </div>
@@ -83,7 +83,7 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
     </div>
     <div style="display:flex;align-items:center;gap:12px">
       <div style="font-size:13px;opacity:0.9" id="user-display"></div>
-      <button id="btn-logout" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer">Çıxış</button>
+      <button id="btn-logout" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer" onclick="auth.signOut()">Çıxış</button>
     </div>
   </div>
 
