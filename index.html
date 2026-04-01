@@ -7,6 +7,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+<style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',sans-serif;background:#f1f5f9;min-height:100vh}
 .hidden{display:none!important}
@@ -14,19 +15,19 @@ input,textarea{font-family:inherit}
 input:focus,textarea:focus{border-color:#2563eb!important;outline:none;box-shadow:0 0 0 3px #bfdbfe}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
-.btn{border:none;border-radius:8px;padding:11px 24px;font-weight:700;font-size:14px;cursor:pointer;width:100%}
-.btn-primary{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white}
+.btn-primary{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:8px;padding:11px 24px;font-weight:700;font-size:14px;cursor:pointer}
 .btn-primary:disabled{background:#94a3b8;cursor:not-allowed}
-.btn-secondary{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0 !important;font-weight:400}
+.btn-secondary{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 18px;font-size:13px;cursor:pointer}
 .card{background:white;border-radius:12px;padding:24px;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
 .err{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;color:#dc2626;font-size:13px;margin-top:12px}
 .inp{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:11px 14px;font-size:14px}
 label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px}
+.mermaid svg{max-width:100%;height:auto}
 </style>
 </head>
 <body>
 
-<!-- LOGIN PAGE -->
+<!-- LOGIN -->
 <div id="page-login" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e3a5f,#2563eb)">
   <div style="background:white;border-radius:16px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
     <div style="text-align:center;margin-bottom:28px">
@@ -34,39 +35,20 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
       <div style="font-weight:800;font-size:22px;color:#1e3a5f">TTS Generator</div>
       <div style="font-size:13px;color:#64748b;margin-top:4px">IT Biznes Analitik Platforması</div>
     </div>
-
-    <!-- Login -->
     <div id="login-form">
-      <div style="margin-bottom:14px">
-        <label>EMAIL</label>
-        <input id="l-email" type="email" class="inp" placeholder="email@bank.az"/>
-      </div>
-      <div style="margin-bottom:20px">
-        <label>ŞİFRƏ</label>
-        <input id="l-pass" type="password" class="inp" placeholder="••••••••"/>
-      </div>
-      <button class="btn btn-primary" onclick="doLogin()">Daxil ol</button>
+      <div style="margin-bottom:14px"><label>EMAIL</label><input id="l-email" type="email" class="inp" placeholder="email@bank.az"/></div>
+      <div style="margin-bottom:20px"><label>ŞİFRƏ</label><input id="l-pass" type="password" class="inp" placeholder="••••••••"/></div>
+      <button class="btn-primary" style="width:100%;font-size:15px" onclick="doLogin()">Daxil ol</button>
       <div style="text-align:center;margin-top:14px;font-size:13px;color:#64748b">
         Hesabın yoxdur? <a href="#" onclick="showReg();return false;" style="color:#2563eb;font-weight:600">Qeydiyyat</a>
       </div>
       <div id="l-err" class="err hidden"></div>
     </div>
-
-    <!-- Register -->
     <div id="reg-form" class="hidden">
-      <div style="margin-bottom:14px">
-        <label>AD SOYAD</label>
-        <input id="r-name" type="text" class="inp" placeholder="Əli Əliyev"/>
-      </div>
-      <div style="margin-bottom:14px">
-        <label>EMAIL</label>
-        <input id="r-email" type="email" class="inp" placeholder="email@bank.az"/>
-      </div>
-      <div style="margin-bottom:20px">
-        <label>ŞİFRƏ</label>
-        <input id="r-pass" type="password" class="inp" placeholder="minimum 6 simvol"/>
-      </div>
-      <button class="btn btn-primary" onclick="doRegister()">Qeydiyyatdan keç</button>
+      <div style="margin-bottom:14px"><label>AD SOYAD</label><input id="r-name" type="text" class="inp" placeholder="Əli Əliyev"/></div>
+      <div style="margin-bottom:14px"><label>EMAIL</label><input id="r-email" type="email" class="inp" placeholder="email@bank.az"/></div>
+      <div style="margin-bottom:20px"><label>ŞİFRƏ</label><input id="r-pass" type="password" class="inp" placeholder="minimum 6 simvol"/></div>
+      <button class="btn-primary" style="width:100%;font-size:15px" onclick="doRegister()">Qeydiyyatdan keç</button>
       <div style="text-align:center;margin-top:14px">
         <a href="#" onclick="showLogin();return false;" style="font-size:13px;color:#2563eb;font-weight:600">← Geri qayıt</a>
       </div>
@@ -75,9 +57,8 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
   </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- APP -->
 <div id="page-app" class="hidden">
-  <!-- Header -->
   <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:14px 24px;color:white;display:flex;align-items:center;justify-content:space-between">
     <div style="display:flex;align-items:center;gap:10px">
       <span style="font-size:22px">📋</span>
@@ -94,44 +75,44 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
 
   <div style="padding:20px;max-width:1200px;margin:0 auto;display:flex;gap:20px;align-items:flex-start">
 
-    <!-- Docs List -->
-    <div style="width:280px;flex-shrink:0">
+    <!-- Sol panel: Sənədlər -->
+    <div style="width:260px;flex-shrink:0">
       <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.06)">
         <div style="background:#1e3a5f;color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
           <span style="font-weight:700;font-size:13px">📂 Sənədlərim</span>
           <button onclick="showNewDoc()" style="background:rgba(255,255,255,0.2);color:white;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600">+ Yeni</button>
         </div>
-        <div id="docs-list" style="max-height:620px;overflow-y:auto">
+        <div id="docs-list" style="max-height:640px;overflow-y:auto">
           <div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Yüklənir...</div>
         </div>
       </div>
     </div>
 
-    <!-- Panels -->
-    <div style="flex:1">
+    <!-- Sağ panel -->
+    <div style="flex:1;min-width:0">
 
-      <!-- Empty -->
+      <!-- Boş -->
       <div id="panel-empty" class="card" style="text-align:center;padding:48px">
         <div style="font-size:48px;margin-bottom:12px">📄</div>
         <div style="font-weight:600;font-size:15px;margin-bottom:6px;color:#374151">Hələ sənəd yoxdur</div>
         <div style="font-size:13px;color:#94a3b8;margin-bottom:20px">Yeni TTS yaratmaq üçün "+ Yeni" düyməsinə bas</div>
-        <button class="btn btn-primary" style="width:auto;padding:11px 28px" onclick="showNewDoc()">+ Yeni TTS Yarat</button>
+        <button class="btn-primary" onclick="showNewDoc()">+ Yeni TTS Yarat</button>
       </div>
 
-      <!-- New -->
+      <!-- Yeni sənəd -->
       <div id="panel-new" class="card hidden">
         <div style="font-weight:700;font-size:15px;color:#1e3a5f;margin-bottom:4px">📝 Elicitation Qeydləri</div>
-        <div style="font-size:13px;color:#64748b;margin-bottom:14px">Stakeholderlərlə görüşdən topladığın qeydləri sərbəst mətnlə yaz.</div>
-        <input id="doc-title" type="text" class="inp" placeholder="Sənəd adı" style="margin-bottom:10px"/>
+        <div style="font-size:13px;color:#64748b;margin-bottom:14px">Stakeholderlərlə görüşdən topladığın qeydləri sərbəst mətnlə yaz. AI TTS-in bütün bölmələrini avtomatik dolduracaq.</div>
+        <input id="doc-title" type="text" class="inp" placeholder="Sənəd adı (məs: Birbank Onboarding Dəyişikliyi)" style="margin-bottom:10px"/>
         <textarea id="doc-input" class="inp" placeholder="Elicitation qeydlərini bura yaz..." style="min-height:180px;resize:vertical;line-height:1.6"></textarea>
         <div style="display:flex;gap:10px;margin-top:12px">
-          <button class="btn btn-primary" style="width:auto;padding:11px 28px" onclick="startGenerate()">🚀 TTS Yarat</button>
-          <button class="btn btn-secondary" style="width:auto;padding:11px 20px;border:1.5px solid #e2e8f0" onclick="loadExample()">📌 Nümunə</button>
+          <button class="btn-primary" onclick="startGenerate()">🚀 TTS Yarat</button>
+          <button class="btn-secondary" onclick="loadExample()">📌 Nümunə</button>
         </div>
         <div id="gen-err" class="err hidden"></div>
       </div>
 
-      <!-- Loading -->
+      <!-- Yüklənir -->
       <div id="panel-loading" class="card hidden" style="text-align:center;padding:48px">
         <div style="font-size:44px;margin-bottom:16px">⚙️</div>
         <div style="font-weight:700;font-size:16px;color:#1e3a5f;margin-bottom:8px">TTS hazırlanır...</div>
@@ -139,21 +120,21 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
         <div style="background:#f1f5f9;border-radius:100px;height:8px;overflow:hidden;max-width:400px;margin:0 auto">
           <div id="prog-bar" style="background:linear-gradient(90deg,#2563eb,#7c3aed);height:100%;border-radius:100px;width:0%;transition:width 0.5s"></div>
         </div>
-        <div id="prog-step" style="font-size:12px;color:#94a3b8;margin-top:8px">0 / 8</div>
+        <div id="prog-step" style="font-size:12px;color:#94a3b8;margin-top:8px">0 / 9</div>
       </div>
 
-      <!-- View -->
+      <!-- Sənəd görüntüsü -->
       <div id="panel-view" class="hidden" style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.06)">
         <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
           <div>
             <div id="view-title" style="font-weight:700;font-size:16px;color:#1e3a5f"></div>
             <div id="view-date" style="font-size:12px;color:#94a3b8;margin-top:2px"></div>
           </div>
-          <button class="btn btn-secondary" style="width:auto;padding:7px 14px;font-size:12px;border:1.5px solid #e2e8f0" onclick="showNewDoc()">+ Yeni TTS</button>
+          <button class="btn-secondary" style="font-size:12px;padding:7px 14px" onclick="showNewDoc()">+ Yeni TTS</button>
         </div>
         <div style="display:flex">
-          <div id="sec-tabs" style="width:190px;flex-shrink:0;border-right:1px solid #f1f5f9;max-height:580px;overflow-y:auto"></div>
-          <div id="sec-content" style="flex:1;padding:20px;max-height:580px;overflow-y:auto"></div>
+          <div id="sec-tabs" style="width:200px;flex-shrink:0;border-right:1px solid #f1f5f9;max-height:600px;overflow-y:auto"></div>
+          <div id="sec-content" style="flex:1;padding:20px;max-height:600px;overflow-y:auto;min-width:0"></div>
         </div>
       </div>
 
@@ -162,7 +143,9 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
 </div>
 
 <script>
-// ═══ FIREBASE ═══
+// ═══ CONFIG ═══
+const GROQ_KEY = "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";
+
 firebase.initializeApp({
   apiKey: "AIzaSyAnwjfcronxcuziIBONSA1z1Y4K9_WO18g",
   authDomain: "tts-generator-556a8.firebaseapp.com",
@@ -172,128 +155,32 @@ firebase.initializeApp({
   appId: "1:875341592557:web:17385007c71c924d4259e4"
 });
 const db = firebase.firestore();
-
-// ═══ GROQ ═══
-const GROQ_KEY = "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";
+mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
 
 // ═══ STATE ═══
 let currentUser = null, currentDocId = null, currentResult = null, activeSection = "general", userDocs = [];
 
-// ═══ HELPERS ═══
-const $ = id => document.getElementById(id);
-const show = id => $(id).classList.remove('hidden');
-const hide = id => $(id).classList.add('hidden');
-const val = id => $(id).value.trim();
-const showErr = (id, msg) => { $(id).textContent = msg; $(id).classList.remove('hidden'); };
-const hideErr = id => $(id).classList.add('hidden');
-function showPanel(n) { ['empty','new','loading','view'].forEach(p => hide('panel-'+p)); show('panel-'+n); }
+// ═══ TABS ═══
+const TABS = [
+  {key:"general",      code:"1.1",  label:"Ümumi Məlumat"},
+  {key:"stakeholders", code:"1.3",  label:"Maraqlı Tərəflər"},
+  {key:"summary",      code:"1.4",  label:"Sənədin Xülasəsi"},
+  {key:"terms",        code:"3",    label:"Terminlər"},
+  {key:"acronyms",     code:"4",    label:"Abbreviaturalar"},
+  {key:"asis",         code:"5.1",  label:"Cari Vəziyyət"},
+  {key:"businessneed", code:"5.2",  label:"Biznes Ehtiyacı"},
+  {key:"tobe",         code:"5.3",  label:"Olmalı Vəziyyət"},
+  {key:"users",        code:"6",    label:"İstifadəçilər"},
+  {key:"process",      code:"7",    label:"Proses Ardıcıllığı"},
+  {key:"modelling",    code:"8",    label:"Modellər (Diaqramlar)"},
+  {key:"integrations", code:"9",    label:"İnteqrasiyalar"},
+  {key:"service",      code:"10",   label:"Servis Detalları"},
+  {key:"functional",   code:"11.1", label:"Funksional Tələblər"},
+  {key:"nonfunctional",code:"11.2", label:"Qeyri-Funksional"},
+  {key:"risks",        code:"12",   label:"Risklər"},
+  {key:"acceptance",   code:"13",   label:"Qəbul Meyarları"},
+];
 
-// Sadə hash funksiyası
-async function hashPass(pass) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-// Session saxla
-function saveSession(user) {
-  localStorage.setItem('tts_user', JSON.stringify(user));
-}
-function clearSession() {
-  localStorage.removeItem('tts_user');
-}
-function getSession() {
-  try { return JSON.parse(localStorage.getItem('tts_user')); } catch { return null; }
-}
-
-// ═══ AUTH ═══
-function showReg() { hide('login-form'); show('reg-form'); }
-function showLogin() { hide('reg-form'); show('login-form'); }
-
-async function doLogin() {
-  hideErr('l-err');
-  const email = val('l-email'), pass = val('l-pass');
-  if (!email) { showErr('l-err', 'Email daxil edin'); return; }
-  if (!pass) { showErr('l-err', 'Şifrə daxil edin'); return; }
-  const btn = event.target;
-  btn.disabled = true; btn.textContent = 'Gözləyin...';
-  try {
-    const hash = await hashPass(pass);
-    const snap = await db.collection('users')
-      .where('email', '==', email.toLowerCase())
-      .where('passHash', '==', hash)
-      .get();
-    if (snap.empty) {
-      showErr('l-err', 'Email və ya şifrə yanlışdır');
-      btn.disabled = false; btn.textContent = 'Daxil ol';
-      return;
-    }
-    const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
-    delete user.passHash;
-    currentUser = user;
-    saveSession(user);
-    enterApp();
-  } catch(e) {
-    showErr('l-err', 'Xəta: ' + e.message);
-    btn.disabled = false; btn.textContent = 'Daxil ol';
-  }
-}
-
-async function doRegister() {
-  hideErr('r-err');
-  const name = val('r-name'), email = val('r-email'), pass = val('r-pass');
-  if (!name) { showErr('r-err', 'Ad Soyad daxil edin'); return; }
-  if (!email) { showErr('r-err', 'Email daxil edin'); return; }
-  if (pass.length < 6) { showErr('r-err', 'Şifrə minimum 6 simvol olmalıdır'); return; }
-  const btn = event.target;
-  btn.disabled = true; btn.textContent = 'Gözləyin...';
-  try {
-    // Email mövcuddurmu yoxla
-    const existing = await db.collection('users').where('email', '==', email.toLowerCase()).get();
-    if (!existing.empty) {
-      showErr('r-err', 'Bu email artıq qeydiyyatdadır');
-      btn.disabled = false; btn.textContent = 'Qeydiyyatdan keç';
-      return;
-    }
-    const hash = await hashPass(pass);
-    const ref = await db.collection('users').add({
-      name, email: email.toLowerCase(), passHash: hash,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    const user = { id: ref.id, name, email: email.toLowerCase() };
-    currentUser = user;
-    saveSession(user);
-    enterApp();
-  } catch(e) {
-    showErr('r-err', 'Xəta: ' + e.message);
-    btn.disabled = false; btn.textContent = 'Qeydiyyatdan keç';
-  }
-}
-
-function doLogout() {
-  currentUser = null;
-  clearSession();
-  show('page-login');
-  hide('page-app');
-  showLogin();
-}
-
-function enterApp() {
-  hide('page-login');
-  show('page-app');
-  $('user-name').textContent = currentUser.name || currentUser.email;
-  loadDocs();
-}
-
-// Sessiyadan istifadəçini yüklə
-window.addEventListener('load', () => {
-  const session = getSession();
-  if (session) {
-    currentUser = session;
-    enterApp();
-  }
-});
-
-// ═══ DOCS ═══
 const EXAMPLE = `Birbank Biznes tətbiqində mövcud onboarding prosesində dəyişiklik tələb olunur.
 
 Hazırda müştəri onboarding zamanı biznes sənədlərini (vergi şəhadətnaməsi, nizamnamə, müqavilə) əl ilə bank filialına təqdim edir. Bu proses 3-5 iş günü çəkir.
@@ -304,53 +191,105 @@ Yeni tələb: Müştəri sənədləri Birbank Biznes mobil tətbiqi vasitəsilə
 Texniki: REST API, CBS inteqrasiyası, OCR servisi, push notification gateway.
 Gözlənilən nəticə: Onboarding müddəti 3-5 gündən 24 saata endirilsin.`;
 
-function loadExample() {
-  $('doc-input').value = EXAMPLE;
-  $('doc-title').value = 'Birbank Biznes Onboarding Dəyişikliyi';
+// ═══ HELPERS ═══
+const $ = id => document.getElementById(id);
+const show = id => $(id).classList.remove('hidden');
+const hide = id => $(id).classList.add('hidden');
+const val = id => $(id).value.trim();
+const showErr = (id, msg) => { $(id).textContent = msg; $(id).classList.remove('hidden'); };
+const hideErr = id => $(id).classList.add('hidden');
+function showPanel(n) { ['empty','new','loading','view'].forEach(p => hide('panel-'+p)); show('panel-'+n); }
+
+async function hashPass(pass) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pass));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function saveSession(u) { localStorage.setItem('tts_user', JSON.stringify(u)); }
+function clearSession() { localStorage.removeItem('tts_user'); }
+function getSession() { try { return JSON.parse(localStorage.getItem('tts_user')); } catch { return null; } }
+
+// ═══ AUTH ═══
+function showReg() { hide('login-form'); show('reg-form'); }
+function showLogin() { hide('reg-form'); show('login-form'); }
+
+async function doLogin() {
+  hideErr('l-err');
+  const email = val('l-email'), pass = val('l-pass');
+  if (!email) { showErr('l-err','Email daxil edin'); return; }
+  if (!pass) { showErr('l-err','Şifrə daxil edin'); return; }
+  const btn = document.querySelector('#login-form .btn-primary');
+  btn.disabled = true; btn.textContent = 'Gözləyin...';
+  try {
+    const hash = await hashPass(pass);
+    const snap = await db.collection('users').where('email','==',email.toLowerCase()).where('passHash','==',hash).get();
+    if (snap.empty) { showErr('l-err','Email və ya şifrə yanlışdır'); btn.disabled=false; btn.textContent='Daxil ol'; return; }
+    const user = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    delete user.passHash;
+    currentUser = user;
+    saveSession(user);
+    enterApp();
+  } catch(e) { showErr('l-err','Xəta: '+e.message); btn.disabled=false; btn.textContent='Daxil ol'; }
 }
 
+async function doRegister() {
+  hideErr('r-err');
+  const name = val('r-name'), email = val('r-email'), pass = val('r-pass');
+  if (!name) { showErr('r-err','Ad Soyad daxil edin'); return; }
+  if (!email) { showErr('r-err','Email daxil edin'); return; }
+  if (pass.length < 6) { showErr('r-err','Şifrə minimum 6 simvol olmalıdır'); return; }
+  const btn = document.querySelector('#reg-form .btn-primary');
+  btn.disabled = true; btn.textContent = 'Gözləyin...';
+  try {
+    const existing = await db.collection('users').where('email','==',email.toLowerCase()).get();
+    if (!existing.empty) { showErr('r-err','Bu email artıq qeydiyyatdadır'); btn.disabled=false; btn.textContent='Qeydiyyatdan keç'; return; }
+    const hash = await hashPass(pass);
+    const ref = await db.collection('users').add({ name, email: email.toLowerCase(), passHash: hash, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    const user = { id: ref.id, name, email: email.toLowerCase() };
+    currentUser = user;
+    saveSession(user);
+    enterApp();
+  } catch(e) { showErr('r-err','Xəta: '+e.message); btn.disabled=false; btn.textContent='Qeydiyyatdan keç'; }
+}
+
+function doLogout() { currentUser=null; clearSession(); show('page-login'); hide('page-app'); showLogin(); }
+
+function enterApp() {
+  hide('page-login'); show('page-app');
+  $('user-name').textContent = currentUser.name || currentUser.email;
+  loadDocs();
+}
+
+window.addEventListener('load', () => {
+  const s = getSession();
+  if (s) { currentUser = s; enterApp(); }
+});
+
+// ═══ DOCS ═══
+function loadExample() { $('doc-input').value = EXAMPLE; $('doc-title').value = 'Birbank Biznes Onboarding Dəyişikliyi'; }
+
 function showNewDoc() {
-  currentDocId = null;
-  hideErr('gen-err');
-  $('doc-title').value = '';
-  $('doc-input').value = '';
-  showPanel('new');
-  renderDocsList();
+  currentDocId = null; hideErr('gen-err');
+  $('doc-title').value = ''; $('doc-input').value = '';
+  showPanel('new'); renderDocsList();
 }
 
 async function loadDocs() {
   try {
-    const snap = await db.collection('documents')
-      .where('userId', '==', currentUser.id)
-      .orderBy('createdAt', 'desc')
-      .get();
+    const snap = await db.collection('documents').where('userId','==',currentUser.id).orderBy('createdAt','desc').get();
     userDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    console.log('Docs loaded:', userDocs.length);
   } catch(e) {
-    console.warn('loadDocs error:', e);
-    // Index olmasa orderBy-siz cəhd et
     try {
-      const snap2 = await db.collection('documents')
-        .where('userId', '==', currentUser.id)
-        .get();
-      userDocs = snap2.docs.map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      console.log('Docs loaded (fallback):', userDocs.length);
-    } catch(e2) {
-      console.warn('loadDocs fallback error:', e2);
-      userDocs = [];
-    }
+      const snap2 = await db.collection('documents').where('userId','==',currentUser.id).get();
+      userDocs = snap2.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    } catch { userDocs = []; }
   }
   renderDocsList();
-  if (userDocs.length === 0) showPanel('empty');
+  if (!userDocs.length) showPanel('empty');
 }
 
 function renderDocsList() {
   const el = $('docs-list');
-  if (!userDocs.length) {
-    el.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Sənəd yoxdur</div>';
-    return;
-  }
+  if (!userDocs.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Sənəd yoxdur</div>'; return; }
   el.innerHTML = userDocs.map(doc => {
     const date = doc.createdAt ? new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ') : '—';
     const active = doc.id === currentDocId;
@@ -360,7 +299,7 @@ function renderDocsList() {
           <div style="font-size:13px;color:${active?'#1d4ed8':'#374151'};font-weight:${active?600:400};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${doc.title}</div>
           <div style="font-size:11px;color:#94a3b8;margin-top:2px">${date}</div>
         </div>
-        <button onclick="event.stopPropagation();deleteDoc('${doc.id}')" style="background:none;border:none;color:#fca5a5;cursor:pointer;font-size:15px">🗑</button>
+        <button onclick="event.stopPropagation();deleteDoc('${doc.id}')" style="background:none;border:none;color:#fca5a5;cursor:pointer;font-size:15px;flex-shrink:0">🗑</button>
       </div>
     </div>`;
   }).join('');
@@ -372,7 +311,7 @@ function openDoc(id) {
   currentDocId = id; currentResult = doc.result; activeSection = 'general';
   $('view-title').textContent = doc.title;
   const date = doc.createdAt ? new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ') : '—';
-  $('view-date').textContent = date + ' · ' + (doc.userName || '');
+  $('view-date').textContent = date + ' · ' + (doc.userName||'');
   renderSecTabs(); renderSecContent(); showPanel('view'); renderDocsList();
 }
 
@@ -387,53 +326,36 @@ async function deleteDoc(id) {
 // ═══ GENERATE ═══
 async function startGenerate() {
   const title = val('doc-title'), input = val('doc-input');
-  if (!title) { showErr('gen-err', 'Sənəd adı daxil edin'); return; }
-  if (!input) { showErr('gen-err', 'Elicitation qeydlərini daxil edin'); return; }
-  hideErr('gen-err');
-  showPanel('loading');
+  if (!title) { showErr('gen-err','Sənəd adı daxil edin'); return; }
+  if (!input) { showErr('gen-err','Elicitation qeydlərini daxil edin'); return; }
+  hideErr('gen-err'); showPanel('loading');
   try {
     const result = await generateTTS(input);
     const ref = await db.collection('documents').add({
-      userId: currentUser.id,
-      userName: currentUser.name || currentUser.email,
-      title, result,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      userId: currentUser.id, userName: currentUser.name||currentUser.email,
+      title, result, createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     await loadDocs();
     currentDocId = ref.id; currentResult = result; activeSection = 'general';
     $('view-title').textContent = title;
     $('view-date').textContent = new Date().toLocaleDateString('az-AZ');
     renderSecTabs(); renderSecContent(); showPanel('view'); renderDocsList();
-  } catch(e) {
-    showPanel('new');
-    showErr('gen-err', 'Xəta: ' + e.message);
-  }
+  } catch(e) { showPanel('new'); showErr('gen-err','Xəta: '+e.message); }
 }
 
 function setProgress(msg, step) {
   $('prog-msg').textContent = msg;
-  $('prog-bar').style.width = ((step/8)*100) + '%';
-  $('prog-step').textContent = step + ' / 8';
+  $('prog-bar').style.width = ((step/9)*100)+'%';
+  $('prog-step').textContent = step+' / 9';
 }
 
 async function askGroq(prompt) {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "authorization": `Bearer ${GROQ_KEY}`
-    },
-    body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.2,
-      max_tokens: 4000,
-      messages: [{ role: "user", content: prompt }]
-    })
+    headers: { "content-type":"application/json", "authorization":`Bearer ${GROQ_KEY}` },
+    body: JSON.stringify({ model:"llama-3.3-70b-versatile", temperature:0.2, max_tokens:3000, messages:[{role:"user",content:prompt}] })
   });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || 'API xətası: ' + res.status);
-  }
+  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message||'API xətası: '+res.status); }
   const d = await res.json();
   return d.choices[0].message.content.trim();
 }
@@ -446,22 +368,25 @@ function safeJSON(t) {
 }
 
 const SYS = `Sən bank IT Biznes Analitik köməkçisisən. Elicitation qeydlərinə əsasən TTS sənədi hazırlayırsan. Həmişə təmiz JSON qaytar, heç bir izahat yazma, markdown istifadə etmə.`;
+const WAIT = ms => new Promise(r => setTimeout(r, ms));
 
 async function generateTTS(input) {
   const date = new Date().toLocaleDateString('az-AZ'), result = {};
   const calls = [
-    { msg:"📋 Ümumi məlumat və xülasə...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"documentTitle":"...","documentVersion":"1.0","documentDate":"${date}","summary":"..."}` },
+    { msg:"📋 Ümumi məlumat və xülasə...",      p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"documentTitle":"...","documentVersion":"1.0","documentDate":"${date}","summary":"..."}` },
     { msg:"🔍 AS-IS, Biznes Ehtiyacı, TO-BE...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"asis":"...","businessneed":"...","tobe":"..."}` },
-    { msg:"👥 Stakeholderlər və istifadəçilər...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"stakeholders":[{"role":"...","name":"TBD","responsibility":"..."}],"users":[{"category":"...","description":"...","access":"..."}]}` },
-    { msg:"📖 Terminlər, abbreviaturalar, proses...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"terms":[{"term":"...","definition":"..."}],"acronyms":[{"acronym":"...","description":"..."}],"process":"..."}` },
-    { msg:"🔗 İnteqrasiyalar...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"external":[{"system":"...","type":"REST API","description":"..."}],"internal":[{"system":"...","type":"...","description":"..."}],"dependencies":[{"item":"...","description":"..."}]}` },
-    { msg:"⚙️ Servis detalları...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON (bodyExample sadə string):\n{"method":"POST","url":"/api/v1/...","description":"...","bodyExample":"field1=value1","successResponse":"status=success","errorResponse":"code=400","errorCodes":[{"code":"400","description":"..."}]}` },
-    { msg:"✅ Funksional və qeyri-funksional tələblər...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"functional":[{"id":"FR-001","requirement":"...","priority":"High"}],"nonfunctional":[{"id":"NFR-001","requirement":"...","category":"Performance"}]}` },
-    { msg:"📊 BPMN, Sequence, ERD diaqramlar...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON (Mermaid syntax ilə):\n{"bpmn":"flowchart TD\\n  A[Başla] --> B[...]\\n  B --> C[Bitir]","sequence":"sequenceDiagram\\n  participant A\\n  participant B\\n  A->>B: sorğu\\n  B-->>A: cavab","erd":"erDiagram\\n  ENTITY1 ||--o{ ENTITY2 : has\\n  ENTITY1 { string field1 }"}` },
+    { msg:"👥 Stakeholderlər və istifadəçilər...",p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"stakeholders":[{"role":"...","name":"TBD","responsibility":"..."}],"users":[{"category":"...","description":"...","access":"..."}]}` },
+    { msg:"📖 Terminlər, abbreviaturalar, proses...",p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"terms":[{"term":"...","definition":"..."}],"acronyms":[{"acronym":"...","description":"..."}],"process":"..."}` },
+    { msg:"🔗 İnteqrasiyalar...",                p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"external":[{"system":"...","type":"REST API","description":"..."}],"internal":[{"system":"...","type":"...","description":"..."}],"dependencies":[{"item":"...","description":"..."}]}` },
+    { msg:"⚙️ Servis detalları...",              p:`${SYS}\n\nElicitation:\n${input}\n\nJSON (bodyExample sadə string):\n{"method":"POST","url":"/api/v1/...","description":"...","bodyExample":"field1=value1","successResponse":"status=success","errorResponse":"code=400","errorCodes":[{"code":"400","description":"..."}]}` },
+    { msg:"✅ Funksional və qeyri-funksional...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"functional":[{"id":"FR-001","requirement":"...","priority":"High"}],"nonfunctional":[{"id":"NFR-001","requirement":"...","category":"Performance"}]}` },
+    { msg:"⚠️ Risklər və qəbul meyarları...",    p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"technical":[{"risk":"...","impact":"...","mitigation":"..."}],"business":[{"risk":"...","impact":"...","mitigation":"..."}],"acceptance":[{"id":"AC-001","criteria":"...","testCase":"..."}]}` },
+    { msg:"📊 BPMN, Sequence, ERD diaqramlar...", p:`${SYS}\n\nElicitation:\n${input}\n\nMermaid sintaksisi ilə JSON qaytar. Hər diaqram tam işlək Mermaid kodu olsun:\n{"bpmn":"flowchart TD\\n  A([Başla]) --> B[...]\\n  B --> C([Bitir])","sequence":"sequenceDiagram\\n  participant User\\n  participant System\\n  User->>System: sorğu\\n  System-->>User: cavab","erd":"erDiagram\\n  CUSTOMER ||--o{ ORDER : places\\n  CUSTOMER { string name\\n  string email }\\n  ORDER { int id\\n  string status }"}` },
   ];
+
   for (let i = 0; i < calls.length; i++) {
     setProgress(calls[i].msg, i+1);
-    if (i > 0) await new Promise(r => setTimeout(r, 8000)); // 8 saniyə gözlə
+    if (i > 0) await WAIT(7000);
     const p = safeJSON(await askGroq(calls[i].p));
     if (!p) continue;
     if (i===0) { result.general={documentTitle:p.documentTitle,documentVersion:p.documentVersion,documentDate:date,itBusinessAnalysts:currentUser.name||currentUser.email,jiraLink:"—"}; result.summary=p.summary; }
@@ -477,26 +402,7 @@ async function generateTTS(input) {
   return result;
 }
 
-// ═══ TABS ═══
-const TABS = [
-  {key:"general",code:"1.1",label:"Ümumi Məlumat"},
-  {key:"stakeholders",code:"1.3",label:"Maraqlı Tərəflər"},
-  {key:"summary",code:"1.4",label:"Sənədin Xülasəsi"},
-  {key:"terms",code:"3",label:"Terminlər"},
-  {key:"acronyms",code:"4",label:"Abbreviaturalar"},
-  {key:"asis",code:"5.1",label:"Cari Vəziyyət"},
-  {key:"businessneed",code:"5.2",label:"Biznes Ehtiyacı"},
-  {key:"tobe",code:"5.3",label:"Olmalı Vəziyyət"},
-  {key:"users",code:"6",label:"İstifadəçilər"},
-  {key:"process",code:"7",label:"Proses Ardıcıllığı"},
-  {key:"modelling",code:"8",label:"Modellər (Diaqramlar)"},
-  {key:"service",code:"10",label:"Servis Detalları"},
-  {key:"functional",code:"11.1",label:"Funksional Tələblər"},
-  {key:"nonfunctional",code:"11.2",label:"Qeyri-Funksional"},
-  {key:"risks",code:"12",label:"Risklər"},
-  {key:"acceptance",code:"13",label:"Qəbul Meyarları"},
-];
-
+// ═══ RENDER ═══
 function renderSecTabs() {
   $('sec-tabs').innerHTML = TABS.map(t => `
     <div onclick="selectSec('${t.key}')" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:${activeSection===t.key?'#eff6ff':'white'};border-left:${activeSection===t.key?'3px solid #2563eb':'3px solid transparent'}">
@@ -506,16 +412,19 @@ function renderSecTabs() {
 }
 
 function selectSec(key) { activeSection = key; renderSecTabs(); renderSecContent(); }
+
 function renderSecContent() {
   $('sec-content').innerHTML = getSectionHTML(activeSection, currentResult?currentResult[activeSection]:null);
   if (activeSection === 'modelling') {
-    mermaid.initialize({ startOnLoad: false, theme: 'default' });
-    mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+    setTimeout(() => mermaid.run({ nodes: document.querySelectorAll('.mermaid') }), 100);
   }
 }
 
 function box(l, v) {
-  return `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;text-transform:uppercase">${l}</div><div style="background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:14px;color:#1e293b;border:1px solid #e2e8f0;white-space:pre-wrap;line-height:1.6">${v||'—'}</div></div>`;
+  return `<div style="margin-bottom:14px">
+    <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">${l}</div>
+    <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:14px;color:#1e293b;border:1px solid #e2e8f0;white-space:pre-wrap;line-height:1.6">${v||'—'}</div>
+  </div>`;
 }
 
 function tbl(heads, rows) {
@@ -523,7 +432,12 @@ function tbl(heads, rows) {
   const trs = (!rows||!rows.length)
     ? `<tr><td colspan="${heads.length}" style="padding:12px 14px;color:#94a3b8;font-style:italic;font-size:13px">Məlumat yoxdur</td></tr>`
     : rows.map((r,i)=>`<tr style="background:${i%2===0?'white':'#f8fafc'}">${r.map(c=>`<td style="padding:10px 14px;color:#374151;border-top:1px solid #e2e8f0;font-size:13px">${c||'—'}</td>`).join('')}</tr>`).join('');
-  return `<div style="overflow-x:auto;margin-bottom:16px;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden"><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#1e3a5f">${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
+  return `<div style="overflow-x:auto;margin-bottom:16px;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="background:#1e3a5f">${ths}</tr></thead>
+      <tbody>${trs}</tbody>
+    </table>
+  </div>`;
 }
 
 function getSectionHTML(key, d) {
@@ -539,18 +453,19 @@ function getSectionHTML(key, d) {
     case 'users': return tbl(['Kateqoriya','Təsvir','Giriş'],(d||[]).map(u=>[u.category,u.description,u.access]));
     case 'process': return box('Proses Axışı',d);
     case 'modelling': return `
-      <div style="margin-bottom:24px">
-        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px">8.1 BPMN Diaqram</div>
-        <div class="mermaid">${d?.bpmn||''}</div>
+      <div style="margin-bottom:28px">
+        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px;padding-bottom:8px;border-bottom:2px solid #eff6ff">8.1 BPMN Diaqram</div>
+        <div class="mermaid" style="background:#f8fafc;border-radius:8px;padding:16px;border:1px solid #e2e8f0">${d?.bpmn||'flowchart TD\n  A([Başla]) --> B([Bitir])'}</div>
       </div>
-      <div style="margin-bottom:24px">
-        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px">8.2 Sequence Diaqram</div>
-        <div class="mermaid">${d?.sequence||''}</div>
+      <div style="margin-bottom:28px">
+        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px;padding-bottom:8px;border-bottom:2px solid #eff6ff">8.2 Sequence Diaqram</div>
+        <div class="mermaid" style="background:#f8fafc;border-radius:8px;padding:16px;border:1px solid #e2e8f0">${d?.sequence||'sequenceDiagram\n  participant A\n  participant B\n  A->>B: sorğu'}</div>
       </div>
-      <div style="margin-bottom:24px">
-        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px">8.3 ERD Diaqram</div>
-        <div class="mermaid">${d?.erd||''}</div>
-      </div>`; return `
+      <div style="margin-bottom:28px">
+        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px;padding-bottom:8px;border-bottom:2px solid #eff6ff">8.3 ERD Diaqram</div>
+        <div class="mermaid" style="background:#f8fafc;border-radius:8px;padding:16px;border:1px solid #e2e8f0">${d?.erd||'erDiagram\n  A ||--o{ B : has'}</div>
+      </div>`;
+    case 'integrations': return `
       <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:14px">9.1 Xarici İnteqrasiyalar</div>
       ${tbl(['Sistem','Növ','Təsvir'],(d?.external||[]).map(i=>[i.system,i.type,i.description]))}
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">9.2 Daxili İnteqrasiyalar</div>
@@ -569,7 +484,7 @@ function getSectionHTML(key, d) {
           <div style="font-size:12px;color:#64748b;margin-top:4px">${d?.description||''}</div>
         </div>
       </div>
-      ${[['📤 Request Body',d?.bodyExample,'#e2e8f0'],['✅ Success (200)',d?.successResponse,'#86efac'],['❌ Error (400)',d?.errorResponse,'#fca5a5']].map(([l,v,c])=>`<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;color:#1e3a5f;margin-bottom:6px">${l}</div><pre style="background:#0f172a;color:${c};border-radius:8px;padding:14px;font-size:12px;margin:0;white-space:pre-wrap">${v||''}</pre></div>`).join('')}
+      ${[['📤 Request Body',d?.bodyExample,'#e2e8f0'],['✅ Success (200)',d?.successResponse,'#86efac'],['❌ Error (400)',d?.errorResponse,'#fca5a5']].map(([l,v,c])=>`<div style="margin-bottom:14px"><div style="font-weight:700;font-size:13px;color:#1e3a5f;margin-bottom:6px">${l}</div><pre style="background:#0f172a;color:${c};border-radius:8px;padding:14px;font-size:12px;margin:0;white-space:pre-wrap;overflow-x:auto">${v||''}</pre></div>`).join('')}
       <div style="font-weight:700;font-size:13px;color:#1e3a5f;margin-bottom:8px">Xəta Kodları</div>
       ${tbl(['Kod','Təsvir'],(d?.errorCodes||[]).map(e=>[e.code,e.description]))}`;
     case 'functional': return tbl(['ID','Tələb','Prioritet'],(d||[]).map(f=>[f.id,f.requirement,f.priority]));
