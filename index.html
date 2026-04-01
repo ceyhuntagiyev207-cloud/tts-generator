@@ -78,12 +78,18 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
     <!-- Sol panel: Sənədlər -->
     <div style="width:260px;flex-shrink:0">
       <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.06)">
-        <div style="background:#1e3a5f;color:white;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
-          <span style="font-weight:700;font-size:13px">📂 Sənədlərim</span>
+        <div style="background:#1e3a5f;color:white;padding:10px 16px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-weight:700;font-size:13px">📑 TTS Sənədləri</span>
           <button onclick="showNewDoc()" style="background:rgba(255,255,255,0.2);color:white;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600">+ Yeni</button>
         </div>
-        <div id="docs-list" style="max-height:640px;overflow-y:auto">
+        <div id="docs-list-tts" style="max-height:300px;overflow-y:auto">
           <div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Yüklənir...</div>
+        </div>
+        <div style="background:#166534;color:white;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:2px solid #e2e8f0">
+          <span style="font-weight:700;font-size:13px">📋 İAD Sənədləri</span>
+        </div>
+        <div id="docs-list-iad" style="max-height:300px;overflow-y:auto">
+          <div style="padding:16px;text-align:center;color:#94a3b8;font-size:13px">Yüklənir...</div>
         </div>
       </div>
     </div>
@@ -106,7 +112,8 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
         <input id="doc-title" type="text" class="inp" placeholder="Sənəd adı (məs: Birbank Onboarding Dəyişikliyi)" style="margin-bottom:10px"/>
         <textarea id="doc-input" class="inp" placeholder="Elicitation qeydlərini bura yaz..." style="min-height:180px;resize:vertical;line-height:1.6"></textarea>
         <div style="display:flex;gap:10px;margin-top:12px">
-          <button class="btn-primary" onclick="startGenerate()">🚀 TTS Yarat</button>
+          <button class="btn-primary" onclick="startGenerate('tts')">🚀 TTS Yarat</button>
+          <button class="btn-primary" style="background:linear-gradient(135deg,#166534,#15803d)" onclick="startGenerate('iad')">📋 İAD Yarat</button>
           <button class="btn-secondary" onclick="loadExample()">📌 Nümunə</button>
         </div>
         <div id="gen-err" class="err hidden"></div>
@@ -158,7 +165,7 @@ const db = firebase.firestore();
 mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
 
 // ═══ STATE ═══
-let currentUser = null, currentDocId = null, currentResult = null, activeSection = "general", userDocs = [];
+let currentUser = null, currentDocId = null, currentResult = null, currentDocType = 'tts', activeSection = "general", userDocs = [], userIADs = [];
 
 // ═══ TABS ═══
 const TABS = [
@@ -275,43 +282,58 @@ function showNewDoc() {
 
 async function loadDocs() {
   try {
-    const snap = await db.collection('documents').where('userId','==',currentUser.id).orderBy('createdAt','desc').get();
+    const snap = await db.collection('documents').where('userId','==',currentUser.id).where('type','==','tts').orderBy('createdAt','desc').get();
     userDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch(e) {
     try {
-      const snap2 = await db.collection('documents').where('userId','==',currentUser.id).get();
+      const snap2 = await db.collection('documents').where('userId','==',currentUser.id).where('type','==','tts').get();
       userDocs = snap2.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
     } catch { userDocs = []; }
   }
+  try {
+    const snap = await db.collection('documents').where('userId','==',currentUser.id).where('type','==','iad').orderBy('createdAt','desc').get();
+    userIADs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {
+    try {
+      const snap2 = await db.collection('documents').where('userId','==',currentUser.id).where('type','==','iad').get();
+      userIADs = snap2.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    } catch { userIADs = []; }
+  }
   renderDocsList();
-  if (!userDocs.length) showPanel('empty');
+  if (!userDocs.length && !userIADs.length) showPanel('empty');
 }
 
 function renderDocsList() {
-  const el = $('docs-list');
-  if (!userDocs.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Sənəd yoxdur</div>'; return; }
-  el.innerHTML = userDocs.map(doc => {
+  renderDocGroup('docs-list-tts', userDocs);
+  renderDocGroup('docs-list-iad', userIADs);
+}
+
+function renderDocGroup(elId, docs) {
+  const el = $(elId);
+  if (!docs.length) { el.innerHTML = '<div style="padding:14px;text-align:center;color:#94a3b8;font-size:12px">Sənəd yoxdur</div>'; return; }
+  el.innerHTML = docs.map(doc => {
     const date = doc.createdAt ? new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ') : '—';
     const active = doc.id === currentDocId;
-    return `<div onclick="openDoc('${doc.id}')" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:${active?'#eff6ff':'white'};border-left:${active?'3px solid #2563eb':'3px solid transparent'}">
+    return `<div onclick="openDoc('${doc.id}')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:${active?'#eff6ff':'white'};border-left:${active?'3px solid #2563eb':'3px solid transparent'}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;color:${active?'#1d4ed8':'#374151'};font-weight:${active?600:400};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${doc.title}</div>
+          <div style="font-size:12px;color:${active?'#1d4ed8':'#374151'};font-weight:${active?600:400};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${doc.title}</div>
           <div style="font-size:11px;color:#94a3b8;margin-top:2px">${date}</div>
         </div>
-        <button onclick="event.stopPropagation();deleteDoc('${doc.id}')" style="background:none;border:none;color:#fca5a5;cursor:pointer;font-size:15px;flex-shrink:0">🗑</button>
+        <button onclick="event.stopPropagation();deleteDoc('${doc.id}')" style="background:none;border:none;color:#fca5a5;cursor:pointer;font-size:14px;flex-shrink:0">🗑</button>
       </div>
     </div>`;
   }).join('');
 }
 
 function openDoc(id) {
-  const doc = userDocs.find(d => d.id === id);
+  const doc = [...userDocs, ...userIADs].find(d => d.id === id);
   if (!doc) return;
-  currentDocId = id; currentResult = doc.result; activeSection = 'general';
+  currentDocId = id; currentResult = doc.result; currentDocType = doc.type || 'tts';
+  activeSection = currentDocType === 'iad' ? 'iad_general' : 'general';
   $('view-title').textContent = doc.title;
   const date = doc.createdAt ? new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ') : '—';
-  $('view-date').textContent = date + ' · ' + (doc.userName||'');
+  $('view-date').textContent = date + ' · ' + (doc.userName||'') + (currentDocType === 'iad' ? ' · İAD' : ' · TTS');
   renderSecTabs(); renderSecContent(); showPanel('view'); renderDocsList();
 }
 
@@ -320,25 +342,27 @@ async function deleteDoc(id) {
   await db.collection('documents').doc(id).delete();
   if (currentDocId === id) { currentDocId = null; currentResult = null; }
   await loadDocs();
-  if (!userDocs.length) showPanel('empty');
+  if (!userDocs.length && !userIADs.length) showPanel('empty');
 }
 
 // ═══ GENERATE ═══
-async function startGenerate() {
+async function startGenerate(type) {
   const title = val('doc-title'), input = val('doc-input');
   if (!title) { showErr('gen-err','Sənəd adı daxil edin'); return; }
   if (!input) { showErr('gen-err','Elicitation qeydlərini daxil edin'); return; }
   hideErr('gen-err'); showPanel('loading');
   try {
-    const result = await generateTTS(input);
+    const result = type === 'iad' ? await generateIAD(input) : await generateTTS(input);
     const ref = await db.collection('documents').add({
       userId: currentUser.id, userName: currentUser.name||currentUser.email,
-      title, result, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      title, result, type,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     await loadDocs();
-    currentDocId = ref.id; currentResult = result; activeSection = 'general';
+    currentDocId = ref.id; currentResult = result; currentDocType = type;
+    activeSection = type === 'iad' ? 'iad_general' : 'general';
     $('view-title').textContent = title;
-    $('view-date').textContent = new Date().toLocaleDateString('az-AZ');
+    $('view-date').textContent = new Date().toLocaleDateString('az-AZ') + (type === 'iad' ? ' · İAD' : ' · TTS');
     renderSecTabs(); renderSecContent(); showPanel('view'); renderDocsList();
   } catch(e) { showPanel('new'); showErr('gen-err','Xəta: '+e.message); }
 }
@@ -403,8 +427,19 @@ async function generateTTS(input) {
 }
 
 // ═══ RENDER ═══
+// İAD placeholder generate (template gəldikdən sonra doldurulacaq)
+async function generateIAD(input) {
+  return { iad_general: { title: val('doc-title'), date: new Date().toLocaleDateString('az-AZ'), analyst: currentUser.name||currentUser.email }, iad_placeholder: "İAD template tezliklə əlavə olunacaq." };
+}
+
+const IAD_TABS = [
+  {key:"iad_general", code:"1", label:"Ümumi Məlumat"},
+  {key:"iad_placeholder", code:"—", label:"Template gözlənilir..."},
+];
+
 function renderSecTabs() {
-  $('sec-tabs').innerHTML = TABS.map(t => `
+  const tabs = currentDocType === 'iad' ? IAD_TABS : TABS;
+  $('sec-tabs').innerHTML = tabs.map(t => `
     <div onclick="selectSec('${t.key}')" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;background:${activeSection===t.key?'#eff6ff':'white'};border-left:${activeSection===t.key?'3px solid #2563eb':'3px solid transparent'}">
       <span style="font-size:10px;color:#94a3b8;font-weight:600;margin-right:4px">${t.code}</span>
       <span style="font-size:12px;color:${activeSection===t.key?'#1d4ed8':'#374151'};font-weight:${activeSection===t.key?600:400}">${t.label}</span>
@@ -495,7 +530,8 @@ function getSectionHTML(key, d) {
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">12.2 Biznes Məhdudiyyətləri</div>
       ${tbl(['Risk','Təsir','Azaltma'],(currentResult?.risks?.business||[]).map(r=>[r.risk,r.impact,r.mitigation]))}`;
     case 'acceptance': return tbl(['ID','Meyar','Test Ssenarisi'],(d||[]).map(a=>[a.id,a.criteria,a.testCase]));
-    default: return '<div style="color:#94a3b8;font-size:13px">Məlumat yoxdur</div>';
+    case 'iad_general': return box('Sənəd Adı', d?.title) + box('Tarix', d?.date) + box('IT Biznes Analitik', d?.analyst);
+    case 'iad_placeholder': return `<div style="text-align:center;padding:32px;color:#94a3b8"><div style="font-size:40px;margin-bottom:12px">📋</div><div style="font-size:14px;font-weight:600;color:#64748b;margin-bottom:8px">İAD Template gözlənilir</div><div style="font-size:13px">Siz İAD templateni göndərdikdən sonra bütün bölmələr əlavə olunacaq.</div></div>`;
   }
 }
 </script>
