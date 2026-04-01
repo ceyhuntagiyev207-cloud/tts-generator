@@ -137,7 +137,10 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
             <div id="view-title" style="font-weight:700;font-size:16px;color:#1e3a5f"></div>
             <div id="view-date" style="font-size:12px;color:#94a3b8;margin-top:2px"></div>
           </div>
-          <button class="btn-secondary" style="font-size:12px;padding:7px 14px" onclick="showNewDoc()">+ Yeni TTS</button>
+          <div style="display:flex;gap:10px">
+            <button class="btn-secondary" style="font-size:12px;padding:7px 14px" onclick="showNewDoc()">+ Yeni Sənəd</button>
+            <button class="btn-secondary" style="font-size:12px;padding:7px 14px;background:#f0fdf4;color:#166534;border-color:#86efac" onclick="downloadDoc()">⬇️ PDF Endir</button>
+          </div>
         </div>
         <div style="display:flex">
           <div id="sec-tabs" style="width:200px;flex-shrink:0;border-right:1px solid #f1f5f9;max-height:600px;overflow-y:auto"></div>
@@ -444,7 +447,35 @@ function renderSecTabs() {
     </div>`).join('');
 }
 
-function selectSec(key) { activeSection = key; renderSecTabs(); renderSecContent(); }
+function downloadDoc() {
+  const title = $('view-title').textContent || 'sened';
+  const content = $('sec-content').innerHTML;
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+    <meta charset="UTF-8"/>
+    <title>${title}</title>
+    <style>
+      body{font-family:'Segoe UI',sans-serif;padding:32px;color:#1e293b;max-width:900px;margin:0 auto}
+      h1{font-size:20px;color:#1e3a5f;margin-bottom:4px}
+      .meta{font-size:12px;color:#64748b;margin-bottom:24px}
+      table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:13px}
+      th{background:#1e3a5f;color:white;padding:8px 12px;text-align:left}
+      td{padding:8px 12px;border:1px solid #e2e8f0}
+      tr:nth-child(even){background:#f8fafc}
+      .box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;margin-bottom:12px;white-space:pre-wrap;font-size:14px;line-height:1.6}
+      .label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px}
+      pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:6px;font-size:12px;white-space:pre-wrap}
+      @media print{body{padding:16px}button{display:none}}
+    </style>
+  </head><body>
+    <h1>${title}</h1>
+    <div class="meta">${$('view-date').textContent}</div>
+    <hr style="margin-bottom:24px;border-color:#e2e8f0"/>
+    ${content}
+    <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
 
 function renderSecContent() {
   $('sec-content').innerHTML = getSectionHTML(activeSection, currentResult?currentResult[activeSection]:null);
