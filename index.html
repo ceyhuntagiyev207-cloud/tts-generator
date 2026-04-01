@@ -453,12 +453,61 @@ function renderTabs() {
 
 function renderContent() {
   try {
-    $('sec-content').innerHTML = getHTML(activeSection, currentResult ? currentResult[activeSection] : null);
+    const d = currentResult ? currentResult[activeSection] : null;
+    const html = getHTML(activeSection, d);
+    const plainText = getPlainText(activeSection, d);
+    $('sec-content').innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <button onclick="copySection()" id="copy-btn"
+          style="background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer">
+          📋 Kopyala
+        </button>
+      </div>
+      <div id="sec-inner">${html}</div>`;
+    window._currentPlainText = plainText;
     if (activeSection === 'modelling') {
       setTimeout(() => mermaid.run({ nodes: document.querySelectorAll('.mermaid') }), 100);
     }
   } catch(e) {
     $('sec-content').innerHTML = '<div style="color:#94a3b8;padding:12px;font-size:13px">Məlumat göstərilə bilmədi.</div>';
+  }
+}
+
+function copySection() {
+  const text = window._currentPlainText || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (btn) { btn.textContent = '✅ Kopyalandı'; setTimeout(() => { btn.textContent = '📋 Kopyala'; }, 2000); }
+  });
+}
+
+function getPlainText(key, d) {
+  switch(key) {
+    case 'general': return `Sənəd Adı: ${d?.documentTitle||''}\nVersiya: ${d?.documentVersion||''}\nTarix: ${d?.documentDate||''}\nIT Biznes Analitik: ${d?.itBusinessAnalysts||''}\nJira: ${d?.jiraLink||''}`;
+    case 'summary': return d||'';
+    case 'asis': return d||'';
+    case 'businessneed': return d||'';
+    case 'tobe': return d||'';
+    case 'process': return d||'';
+    case 'stakeholders': return (d||[]).map(s=>`${s.role} | ${s.name} | ${s.responsibility}`).join('\n');
+    case 'terms': return (d||[]).map(t=>`${t.term}: ${t.definition}`).join('\n');
+    case 'acronyms': return (d||[]).map(a=>`${a.acronym}: ${a.description}`).join('\n');
+    case 'users': return (d||[]).map(u=>`${u.category} | ${u.description} | ${u.access}`).join('\n');
+    case 'functional': return (d||[]).map(f=>`${f.id} | ${f.requirement} | ${f.priority}`).join('\n');
+    case 'nonfunctional': return (d||[]).map(f=>`${f.id} | ${f.requirement} | ${f.category}`).join('\n');
+    case 'acceptance': return (d||[]).map(a=>`${a.id} | ${a.criteria} | ${a.testCase}`).join('\n');
+    case 'integrations': return [
+      'Xarici:', ...(d?.external||[]).map(i=>`  ${i.system} | ${i.type} | ${i.description}`),
+      'Daxili:', ...(d?.internal||[]).map(i=>`  ${i.system} | ${i.type} | ${i.description}`),
+      'Asılılıqlar:', ...(d?.dependencies||[]).map(i=>`  ${i.item} | ${i.description}`)
+    ].join('\n');
+    case 'service': return `Method: ${d?.method||''}\nURL: ${d?.url||''}\nBody: ${d?.bodyExample||''}\nSuccess: ${d?.successResponse||''}\nError: ${d?.errorResponse||''}`;
+    case 'risks': return [
+      'Texniki:', ...(d?.technical||[]).map(r=>`  ${r.risk} | ${r.impact} | ${r.mitigation}`),
+      'Biznes:', ...(d?.business||[]).map(r=>`  ${r.risk} | ${r.impact} | ${r.mitigation}`)
+    ].join('\n');
+    case 'modelling': return `BPMN:\n${d?.bpmn||''}\n\nSequence:\n${d?.sequence||''}\n\nERD:\n${d?.erd||''}`;
+    default: return '';
   }
 }
 
