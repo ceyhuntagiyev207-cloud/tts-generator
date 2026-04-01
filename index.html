@@ -322,13 +322,27 @@ async function loadDocs() {
   try {
     const snap = await db.collection('documents')
       .where('userId', '==', currentUser.id)
-      .orderBy('createdAt', 'desc').get();
+      .orderBy('createdAt', 'desc')
+      .get();
     userDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    console.log('Docs loaded:', userDocs.length);
   } catch(e) {
-    userDocs = [];
+    console.warn('loadDocs error:', e);
+    // Index olmasa orderBy-siz cəhd et
+    try {
+      const snap2 = await db.collection('documents')
+        .where('userId', '==', currentUser.id)
+        .get();
+      userDocs = snap2.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      console.log('Docs loaded (fallback):', userDocs.length);
+    } catch(e2) {
+      console.warn('loadDocs fallback error:', e2);
+      userDocs = [];
+    }
   }
   renderDocsList();
-  showPanel(userDocs.length ? 'empty' : 'empty');
+  if (userDocs.length === 0) showPanel('empty');
 }
 
 function renderDocsList() {
