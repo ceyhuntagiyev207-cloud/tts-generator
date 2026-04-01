@@ -260,19 +260,36 @@ window.addEventListener('load', () => {
   $('btn-login').addEventListener('click', async () => {
     hideErr('login-err');
     const email = val('login-email'), pass = val('login-pass');
-    if (!email || !pass) { showErr('login-err', 'Email və şifrə daxil edin'); return; }
-    try { await auth.signInWithEmailAndPassword(email, pass); }
-    catch(e) { showErr('login-err', getAuthErr(e.code)); }
+    if (!email) { showErr('login-err', 'Email daxil edin'); return; }
+    if (!pass) { showErr('login-err', 'Şifrə daxil edin'); return; }
+    const btn = $('btn-login');
+    btn.disabled = true; btn.textContent = 'Gözləyin...';
+    try {
+      await auth.signInWithEmailAndPassword(email, pass);
+    } catch(e) {
+      console.error('Login error:', e);
+      showErr('login-err', getAuthErr(e.code));
+      btn.disabled = false; btn.textContent = 'Daxil ol';
+    }
   });
 
   $('btn-register').addEventListener('click', async () => {
     hideErr('reg-err');
     const name = val('reg-name'), email = val('reg-email'), pass = val('reg-pass');
-    if (!name || !email || !pass) { showErr('reg-err', 'Bütün sahələri doldurun'); return; }
+    if (!name) { showErr('reg-err', 'Ad Soyad daxil edin'); return; }
+    if (!email) { showErr('reg-err', 'Email daxil edin'); return; }
+    if (!pass || pass.length < 6) { showErr('reg-err', 'Şifrə minimum 6 simvol olmalıdır'); return; }
+    const btn = $('btn-register');
+    btn.disabled = true; btn.textContent = 'Gözləyin...';
     try {
       const cred = await auth.createUserWithEmailAndPassword(email, pass);
       await cred.user.updateProfile({ displayName: name });
-    } catch(e) { showErr('reg-err', getAuthErr(e.code)); }
+      // Uğurlu qeydiyyat — avtomatik login olur
+    } catch(e) {
+      console.error('Register error:', e);
+      showErr('reg-err', getAuthErr(e.code));
+      btn.disabled = false; btn.textContent = 'Qeydiyyatdan keç';
+    }
   });
 
   $('btn-logout').addEventListener('click', () => auth.signOut());
