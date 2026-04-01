@@ -6,7 +6,7 @@
 <title>TTS Generator — IT BA</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',sans-serif;background:#f1f5f9;min-height:100vh}
 .hidden{display:none!important}
@@ -457,7 +457,7 @@ async function generateTTS(input) {
     { msg:"🔗 İnteqrasiyalar...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"external":[{"system":"...","type":"REST API","description":"..."}],"internal":[{"system":"...","type":"...","description":"..."}],"dependencies":[{"item":"...","description":"..."}]}` },
     { msg:"⚙️ Servis detalları...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON (bodyExample sadə string):\n{"method":"POST","url":"/api/v1/...","description":"...","bodyExample":"field1=value1","successResponse":"status=success","errorResponse":"code=400","errorCodes":[{"code":"400","description":"..."}]}` },
     { msg:"✅ Funksional və qeyri-funksional tələblər...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"functional":[{"id":"FR-001","requirement":"...","priority":"High"}],"nonfunctional":[{"id":"NFR-001","requirement":"...","category":"Performance"}]}` },
-    { msg:"⚠️ Risklər və qəbul meyarları...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"technical":[{"risk":"...","impact":"...","mitigation":"..."}],"business":[{"risk":"...","impact":"...","mitigation":"..."}],"acceptance":[{"id":"AC-001","criteria":"...","testCase":"..."}]}` },
+    { msg:"📊 BPMN, Sequence, ERD diaqramlar...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON (Mermaid syntax ilə):\n{"bpmn":"flowchart TD\\n  A[Başla] --> B[...]\\n  B --> C[Bitir]","sequence":"sequenceDiagram\\n  participant A\\n  participant B\\n  A->>B: sorğu\\n  B-->>A: cavab","erd":"erDiagram\\n  ENTITY1 ||--o{ ENTITY2 : has\\n  ENTITY1 { string field1 }"}` },
   ];
   for (let i = 0; i < calls.length; i++) {
     setProgress(calls[i].msg, i+1);
@@ -472,6 +472,7 @@ async function generateTTS(input) {
     else if (i===5) { result.service=p; }
     else if (i===6) { result.functional=p.functional||[]; result.nonfunctional=p.nonfunctional||[]; }
     else if (i===7) { result.risks={technical:p.technical||[],business:p.business||[]}; result.acceptance=p.acceptance||[]; }
+    else if (i===8) { result.modelling={bpmn:p.bpmn||'',sequence:p.sequence||'',erd:p.erd||''}; }
   }
   return result;
 }
@@ -488,7 +489,7 @@ const TABS = [
   {key:"tobe",code:"5.3",label:"Olmalı Vəziyyət"},
   {key:"users",code:"6",label:"İstifadəçilər"},
   {key:"process",code:"7",label:"Proses Ardıcıllığı"},
-  {key:"integrations",code:"9",label:"İnteqrasiyalar"},
+  {key:"modelling",code:"8",label:"Modellər (Diaqramlar)"},
   {key:"service",code:"10",label:"Servis Detalları"},
   {key:"functional",code:"11.1",label:"Funksional Tələblər"},
   {key:"nonfunctional",code:"11.2",label:"Qeyri-Funksional"},
@@ -505,7 +506,13 @@ function renderSecTabs() {
 }
 
 function selectSec(key) { activeSection = key; renderSecTabs(); renderSecContent(); }
-function renderSecContent() { $('sec-content').innerHTML = getSectionHTML(activeSection, currentResult?currentResult[activeSection]:null); }
+function renderSecContent() {
+  $('sec-content').innerHTML = getSectionHTML(activeSection, currentResult?currentResult[activeSection]:null);
+  if (activeSection === 'modelling') {
+    mermaid.initialize({ startOnLoad: false, theme: 'default' });
+    mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+  }
+}
 
 function box(l, v) {
   return `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;text-transform:uppercase">${l}</div><div style="background:#f8fafc;border-radius:8px;padding:12px 14px;font-size:14px;color:#1e293b;border:1px solid #e2e8f0;white-space:pre-wrap;line-height:1.6">${v||'—'}</div></div>`;
@@ -531,7 +538,19 @@ function getSectionHTML(key, d) {
     case 'tobe': return box('Olmalı Vəziyyət',d);
     case 'users': return tbl(['Kateqoriya','Təsvir','Giriş'],(d||[]).map(u=>[u.category,u.description,u.access]));
     case 'process': return box('Proses Axışı',d);
-    case 'integrations': return `
+    case 'modelling': return `
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px">8.1 BPMN Diaqram</div>
+        <div class="mermaid">${d?.bpmn||''}</div>
+      </div>
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px">8.2 Sequence Diaqram</div>
+        <div class="mermaid">${d?.sequence||''}</div>
+      </div>
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;color:#1e3a5f;margin-bottom:12px;font-size:14px">8.3 ERD Diaqram</div>
+        <div class="mermaid">${d?.erd||''}</div>
+      </div>`; return `
       <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:14px">9.1 Xarici İnteqrasiyalar</div>
       ${tbl(['Sistem','Növ','Təsvir'],(d?.external||[]).map(i=>[i.system,i.type,i.description]))}
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:14px">9.2 Daxili İnteqrasiyalar</div>
