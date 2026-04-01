@@ -23,10 +23,11 @@ input:focus,textarea:focus{border-color:#2563eb!important;outline:none;box-shado
 .inp{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:11px 14px;font-size:14px}
 label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px}
 .mermaid svg{max-width:100%;height:auto}
-.tab-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;border-left:3px solid transparent;background:white}
-.tab-item:hover{background:#f8fafc}
-.tab-item.active{background:#eff6ff;border-left-color:#2563eb}
-.tab-item.active .tab-label{color:#1d4ed8;font-weight:600}
+.tab-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;border-left:3px solid transparent;background:white;transition:all 0.15s}
+.tab-item:hover{background:#f8fafc;border-left-color:#c7d2fe}
+.tab-item.active{background:linear-gradient(135deg,#eff6ff,#eef2ff);border-left-color:#6366f1}
+.tab-item.active .tab-label{color:#4f46e5;font-weight:600}
+.tab-item.active .tab-code{color:#6366f1}
 .tab-label{font-size:12px;color:#374151}
 .tab-code{font-size:10px;color:#94a3b8;font-weight:600;margin-right:4px}
 </style>
@@ -557,14 +558,26 @@ function downloadDoc() {
 
 // ═══ HTML BUILDERS ═══
 function box(l, v) {
-  return `<div style="margin-bottom:12px"><div class="box-lbl">${l}</div><div class="box-val">${v||'—'}</div></div>`;
+  return `<div style="margin-bottom:16px">
+    <div style="font-size:10px;font-weight:700;color:#6366f1;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:6px">
+      <div style="width:3px;height:12px;background:linear-gradient(180deg,#6366f1,#8b5cf6);border-radius:2px"></div>
+      ${l}
+    </div>
+    <div style="background:linear-gradient(135deg,#fafafa,#f8fafc);border-radius:10px;padding:14px 16px;font-size:13.5px;color:#1e293b;border:1px solid #e8eaf0;white-space:pre-wrap;line-height:1.7;box-shadow:0 1px 3px rgba(0,0,0,0.04)">${v||'<span style="color:#94a3b8;font-style:italic">Məlumat yoxdur</span>'}</div>
+  </div>`;
 }
+
 function tbl(heads, rows) {
-  const ths = heads.map(h=>`<th>${h}</th>`).join('');
+  const ths = heads.map(h=>`<th style="padding:10px 14px;color:white;text-align:left;font-weight:600;font-size:12px;letter-spacing:0.03em">${h}</th>`).join('');
   const trs = (!rows||!rows.length)
-    ? `<tr><td colspan="${heads.length}" style="color:#94a3b8;font-style:italic">Məlumat yoxdur</td></tr>`
-    : rows.map((r,i)=>`<tr style="background:${i%2===0?'white':'#f8fafc'}">${r.map(c=>`<td style="padding:8px 12px;color:#374151;border:1px solid #e2e8f0;font-size:13px">${c||'—'}</td>`).join('')}</tr>`).join('');
-  return `<div style="overflow-x:auto;margin-bottom:14px;border-radius:6px;border:1px solid #e2e8f0;overflow:hidden"><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#1e3a5f">${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
+    ? `<tr><td colspan="${heads.length}" style="padding:14px;color:#94a3b8;font-style:italic;font-size:13px;text-align:center">Məlumat yoxdur</td></tr>`
+    : rows.map((r,i)=>`<tr style="background:${i%2===0?'white':'#f8fafc'};transition:background 0.15s" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='${i%2===0?'white':'#f8fafc'}'">${r.map(c=>`<td style="padding:10px 14px;color:#374151;border-bottom:1px solid #f1f5f9;font-size:13px">${c||'—'}</td>`).join('')}</tr>`).join('');
+  return `<div style="overflow-x:auto;margin-bottom:16px;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="background:linear-gradient(135deg,#1e3a5f,#2563eb)">${ths}</tr></thead>
+      <tbody>${trs}</tbody>
+    </table>
+  </div>`;
 }
 
 function getHTML(key, d) {
