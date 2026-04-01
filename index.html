@@ -447,6 +447,7 @@ async function generateTTS(input) {
   ];
   for (let i = 0; i < calls.length; i++) {
     setProgress(calls[i].msg, i+1);
+    if (i > 0) await new Promise(r => setTimeout(r, 8000)); // 8 saniyə gözlə
     const p = safeJSON(await askGroq(calls[i].p));
     if (!p) continue;
     if (i===0) { result.general={documentTitle:p.documentTitle,documentVersion:p.documentVersion,documentDate:date,itBusinessAnalysts:currentUser.name||currentUser.email,jiraLink:"—"}; result.summary=p.summary; }
