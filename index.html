@@ -161,6 +161,7 @@ textarea:focus,input:focus{border-color:#2563eb!important;outline:none;box-shado
 <script>
 // ═══ CONFIG ═══
 const GEMINI_KEY = "AIzaSyCzmpcmuh3eu02dFMyrAwaUc6HEU1kZdNQ";
+const GEMINI_MODEL = "gemini-2.0-flash";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAnwjfcronxcuziIBONSA1z1Y4K9_WO18g",
@@ -175,8 +176,12 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Login sessiyasını saxla
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+// Səhifə yeniləndə login qalsın
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+// Login ekranını gizlət, yükləniş göstər
+hide('page-login');
+document.body.insertAdjacentHTML('afterbegin', '<div id="page-loading" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f1f5f9"><div style="text-align:center"><div style="font-size:40px;margin-bottom:12px">📋</div><div style="font-size:14px;color:#64748b">Yüklənir...</div></div></div>');
 
 // ═══ STATE ═══
 let currentUser = null, currentDocId = null, currentResult = null, activeSection = "general", userDocs = [];
@@ -221,6 +226,8 @@ function showPanel(n) { ['empty','new','loading','view'].forEach(p => hide('pane
 
 // ═══ AUTH ═══
 auth.onAuthStateChanged(user => {
+  const loading = document.getElementById('page-loading');
+  if (loading) loading.remove();
   if (user) {
     currentUser = user;
     hide('page-login');
@@ -387,7 +394,7 @@ function setProgress(msg, step) {
 
 async function askGemini(prompt) {
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
     {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
