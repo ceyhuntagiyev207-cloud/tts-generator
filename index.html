@@ -138,7 +138,7 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
         <div style="background:#f1f5f9;border-radius:100px;height:8px;overflow:hidden;max-width:400px;margin:0 auto">
           <div id="prog-bar" style="background:linear-gradient(90deg,#2563eb,#7c3aed);height:100%;border-radius:100px;width:0%;transition:width 0.5s"></div>
         </div>
-        <div id="prog-step" style="font-size:12px;color:#94a3b8;margin-top:8px">0 / 9</div>
+        <div id="prog-step" style="font-size:12px;color:#94a3b8;margin-top:8px">0 / 3</div>
       </div>
 
       <!-- Görüntü -->
@@ -380,15 +380,15 @@ async function startGenerate(type) {
 
 function setProgress(msg, step) {
   $('prog-msg').textContent = msg;
-  $('prog-bar').style.width = ((step/9)*100)+'%';
-  $('prog-step').textContent = step+' / 9';
+  $('prog-bar').style.width = ((step/3)*100)+'%';
+  $('prog-step').textContent = step+' / 3';
 }
 
 async function askGroq(prompt) {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method:"POST",
     headers:{"content-type":"application/json","authorization":`Bearer ${GROQ_KEY}`},
-    body: JSON.stringify({ model:"llama-3.3-70b-versatile", temperature:0.2, max_tokens:3000, messages:[{role:"user",content:prompt}] })
+    body: JSON.stringify({ model:"llama-3.3-70b-versatile", temperature:0.2, max_tokens:2000, messages:[{role:"user",content:prompt}] })
   });
   if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message||'API xətası'); }
   return res.json().then(d => d.choices[0].message.content.trim());
@@ -406,32 +406,101 @@ const WAIT = ms => new Promise(r => setTimeout(r, ms));
 
 async function generateTTS(input) {
   const date = new Date().toLocaleDateString('az-AZ'), r = {};
-  const calls = [
-    { msg:"📋 Ümumi məlumat...",      p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"documentTitle":"...","documentVersion":"1.0","documentDate":"${date}","summary":"..."}` },
-    { msg:"🔍 AS-IS / TO-BE...",       p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"asis":"...","businessneed":"...","tobe":"..."}` },
-    { msg:"👥 Stakeholderlər...",      p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"stakeholders":[{"role":"...","name":"TBD","responsibility":"..."}],"users":[{"category":"...","description":"...","access":"..."}]}` },
-    { msg:"📖 Terminlər / Proses...",  p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"terms":[{"term":"...","definition":"..."}],"acronyms":[{"acronym":"...","description":"..."}],"process":"..."}` },
-    { msg:"🔗 İnteqrasiyalar...",      p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"external":[{"system":"...","type":"REST API","description":"..."}],"internal":[{"system":"...","type":"...","description":"..."}],"dependencies":[{"item":"...","description":"..."}]}` },
-    { msg:"⚙️ Servis detalları...",    p:`${SYS}\n\nElicitation:\n${input}\n\nJSON (bodyExample sadə string):\n{"method":"POST","url":"/api/v1/...","description":"...","bodyExample":"field1=value1","successResponse":"status=success","errorResponse":"code=400","errorCodes":[{"code":"400","description":"..."}]}` },
-    { msg:"✅ Tələblər...",            p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"functional":[{"id":"FR-001","requirement":"...","priority":"High"}],"nonfunctional":[{"id":"NFR-001","requirement":"...","category":"Performance"}]}` },
-    { msg:"⚠️ Risklər...",            p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"technical":[{"risk":"...","impact":"...","mitigation":"..."}],"business":[{"risk":"...","impact":"...","mitigation":"..."}],"acceptance":[{"id":"AC-001","criteria":"...","testCase":"..."}]}` },
-    { msg:"📊 Diaqramlar...",          p:`${SYS}\n\nElicitation:\n${input}\n\nMermaid sintaksisi ilə JSON:\n{"bpmn":"flowchart TD\\n  A([Başla]) --> B[...]\\n  B --> C([Bitir])","sequence":"sequenceDiagram\\n  participant User\\n  participant System\\n  User->>System: sorğu\\n  System-->>User: cavab","erd":"erDiagram\\n  CUSTOMER ||--o{ ORDER : places\\n  CUSTOMER { string name }\\n  ORDER { int id }"}` },
-  ];
-  for (let i = 0; i < calls.length; i++) {
-    setProgress(calls[i].msg, i+1);
-    if (i > 0) await WAIT(15000);
-    const p = safeJSON(await askGroq(calls[i].p));
-    if (!p) continue;
-    if (i===0) { r.general={documentTitle:p.documentTitle,documentVersion:p.documentVersion,documentDate:date,itBusinessAnalysts:currentUser.name||currentUser.email,jiraLink:"—"}; r.summary=p.summary; }
-    else if (i===1) { r.asis=p.asis; r.businessneed=p.businessneed; r.tobe=p.tobe; }
-    else if (i===2) { r.stakeholders=p.stakeholders||[]; r.users=p.users||[]; }
-    else if (i===3) { r.terms=p.terms||[]; r.acronyms=p.acronyms||[]; r.process=p.process; }
-    else if (i===4) { r.integrations={external:p.external||[],internal:p.internal||[],dependencies:p.dependencies||[]}; }
-    else if (i===5) { r.service=p; }
-    else if (i===6) { r.functional=p.functional||[]; r.nonfunctional=p.nonfunctional||[]; }
-    else if (i===7) { r.risks={technical:p.technical||[],business:p.business||[]}; r.acceptance=p.acceptance||[]; }
-    else if (i===8) { r.modelling={bpmn:p.bpmn||'',sequence:p.sequence||'',erd:p.erd||''}; }
+
+  // CALL 1: Ümumi məlumat, AS-IS/TO-BE, Stakeholderlər, Terminlər, Proses
+  setProgress("📋 Ümumi məlumat, stakeholderlər, proses analiz edilir...", 1);
+  const p1 = safeJSON(await askGroq(`${SYS}
+
+Elicitation qeydləri:
+${input}
+
+Aşağıdakı JSON-u doldur. Hər sahəni ətraflı doldur, boş buraxma:
+{
+  "documentTitle": "...",
+  "documentVersion": "1.0",
+  "documentDate": "${date}",
+  "summary": "...",
+  "asis": "...",
+  "businessneed": "...",
+  "tobe": "...",
+  "process": "...",
+  "stakeholders": [{"role":"...","name":"TBD","responsibility":"..."}],
+  "users": [{"category":"...","description":"...","access":"..."}],
+  "terms": [{"term":"...","definition":"..."}],
+  "acronyms": [{"acronym":"...","description":"..."}]
+}`));
+
+  if (p1) {
+    r.general = { documentTitle:p1.documentTitle, documentVersion:p1.documentVersion, documentDate:date, itBusinessAnalysts:currentUser.name||currentUser.email, jiraLink:"—" };
+    r.summary = p1.summary;
+    r.asis = p1.asis;
+    r.businessneed = p1.businessneed;
+    r.tobe = p1.tobe;
+    r.process = p1.process;
+    r.stakeholders = p1.stakeholders||[];
+    r.users = p1.users||[];
+    r.terms = p1.terms||[];
+    r.acronyms = p1.acronyms||[];
   }
+
+  await WAIT(20000);
+
+  // CALL 2: İnteqrasiyalar, Servis detalları, Funksional/Qeyri-funksional tələblər
+  setProgress("🔗 İnteqrasiyalar, servis detalları, tələblər analiz edilir...", 2);
+  const p2 = safeJSON(await askGroq(`${SYS}
+
+Elicitation qeydləri:
+${input}
+
+Aşağıdakı JSON-u doldur. Hər sahəni ətraflı doldur, boş buraxma:
+{
+  "external": [{"system":"...","type":"REST API","description":"..."}],
+  "internal": [{"system":"...","type":"...","description":"..."}],
+  "dependencies": [{"item":"...","description":"..."}],
+  "serviceMethod": "POST",
+  "serviceUrl": "/api/v1/...",
+  "serviceDescription": "...",
+  "bodyExample": "field1=value1, field2=value2",
+  "successResponse": "status=success, data=...",
+  "errorResponse": "code=400, message=...",
+  "errorCodes": [{"code":"400","description":"..."},{"code":"500","description":"..."}],
+  "functional": [{"id":"FR-001","requirement":"...","priority":"High"},{"id":"FR-002","requirement":"...","priority":"Medium"}],
+  "nonfunctional": [{"id":"NFR-001","requirement":"...","category":"Performance"},{"id":"NFR-002","requirement":"...","category":"Security"}]
+}`));
+
+  if (p2) {
+    r.integrations = { external:p2.external||[], internal:p2.internal||[], dependencies:p2.dependencies||[] };
+    r.service = { method:p2.serviceMethod, url:p2.serviceUrl, description:p2.serviceDescription, bodyExample:p2.bodyExample, successResponse:p2.successResponse, errorResponse:p2.errorResponse, errorCodes:p2.errorCodes||[] };
+    r.functional = p2.functional||[];
+    r.nonfunctional = p2.nonfunctional||[];
+  }
+
+  await WAIT(20000);
+
+  // CALL 3: Risklər, Qəbul meyarları, Diaqramlar
+  setProgress("⚠️ Risklər, qəbul meyarları, diaqramlar hazırlanır...", 3);
+  const p3 = safeJSON(await askGroq(`${SYS}
+
+Elicitation qeydləri:
+${input}
+
+Aşağıdakı JSON-u doldur. Hər sahəni ətraflı doldur, boş buraxma. Mermaid diaqramları real proses axışını əks etdirsin:
+{
+  "technicalRisks": [{"risk":"...","impact":"...","mitigation":"..."}],
+  "businessRisks": [{"risk":"...","impact":"...","mitigation":"..."}],
+  "acceptance": [{"id":"AC-001","criteria":"...","testCase":"..."},{"id":"AC-002","criteria":"...","testCase":"..."}],
+  "bpmn": "flowchart TD\\n  A([Başla]) --> B[...]\\n  B --> C([Bitir])",
+  "sequence": "sequenceDiagram\\n  participant User\\n  participant System\\n  User->>System: sorğu\\n  System-->>User: cavab",
+  "erd": "erDiagram\\n  ENTITY1 ||--o{ ENTITY2 : has\\n  ENTITY1 { string field1 }\\n  ENTITY2 { int id }"
+}`));
+
+  if (p3) {
+    r.risks = { technical:p3.technicalRisks||[], business:p3.businessRisks||[] };
+    r.acceptance = p3.acceptance||[];
+    r.modelling = { bpmn:p3.bpmn||'', sequence:p3.sequence||'', erd:p3.erd||'' };
+  }
+
+  setProgress("✅ TTS hazırdır!", 3);
   return r;
 }
 
