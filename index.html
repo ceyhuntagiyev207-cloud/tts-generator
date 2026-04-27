@@ -182,6 +182,7 @@ let currentUser = null, currentDocId = null, currentResult = null,
     currentDocType = 'tts', activeSection = 'general', userDocs = [], userIADs = [];
 
 // ═══ TABS ═══
+// TTS_TABS sonuna review əlavə et
 const TTS_TABS = [
   {key:"general",      code:"1.1",  label:"Ümumi Məlumat"},
   {key:"stakeholders", code:"1.3",  label:"Maraqlı Tərəflər"},
@@ -200,10 +201,16 @@ const TTS_TABS = [
   {key:"nonfunctional",code:"11.2", label:"Qeyri-Funksional"},
   {key:"risks",        code:"12",   label:"Risklər"},
   {key:"acceptance",   code:"13",   label:"Qəbul Meyarları"},
+  {key:"review",       code:"🔍",   label:"Review"},
 ];
 const IAD_TABS = [
-  {key:"iad_general",     code:"1", label:"Ümumi Məlumat"},
-  {key:"iad_placeholder", code:"—", label:"Template gözlənilir"},
+  {key:"iad_general",     code:"1.1", label:"Ümumi Məlumat"},
+  {key:"iad_asis",        code:"2.1", label:"Cari Vəziyyət (AS-IS)"},
+  {key:"iad_needs",       code:"2.2", label:"Biznes Ehtiyacları"},
+  {key:"iad_tobe",        code:"3.1", label:"Gözlənilən Vəziyyət (TO-BE)"},
+  {key:"iad_technical",   code:"3.2", label:"Texniki Təsir"},
+  {key:"iad_risks",       code:"3.3", label:"Risklər"},
+  {key:"review",          code:"🔍",  label:"Review"},
 ];
 
 const EXAMPLE = `Birbank Biznes tətbiqində mövcud onboarding prosesində dəyişiklik tələb olunur.
@@ -505,10 +512,85 @@ Aşağıdakı JSON-u doldur. Hər sahəni ətraflı doldur, boş buraxma. Mermai
 }
 
 async function generateIAD(input) {
-  return {
-    iad_general: { title: val('doc-title'), date: new Date().toLocaleDateString('az-AZ'), analyst: currentUser.name||currentUser.email },
-    iad_placeholder: "İAD template tezliklə əlavə olunacaq."
-  };
+  const date = new Date().toLocaleDateString('az-AZ'), r = {};
+
+  setProgress("📋 Ümumi məlumat, AS-IS, Biznes Ehtiyacları...", 1);
+  const p1 = safeJSON(await askGroq(`${SYS}
+
+Elicitation qeydləri:
+${input}
+
+Aşağıdakı IAD (Initial Analysis Document) JSON-unu doldur. Hər sahəni ətraflı doldur:
+{
+  "documentTitle": "...",
+  "documentVersion": "1.0",
+  "documentDate": "${date}",
+  "asis": "...",
+  "businessNeedsMain": [{"number": 1, "need": "..."}],
+  "regulatoryRequirements": ["...", "..."],
+  "legalRequirements": ["...", "..."],
+  "internalPolicies": ["...", "..."]
+}`));
+
+  if (p1) {
+    r.iad_general = { documentTitle: p1.documentTitle, documentVersion: p1.documentVersion, documentDate: date, analyst: currentUser.name||currentUser.email };
+    r.iad_asis = p1.asis;
+    r.iad_needs = { main: p1.businessNeedsMain||[], regulatory: p1.regulatoryRequirements||[], legal: p1.legalRequirements||[], internal: p1.internalPolicies||[] };
+  }
+
+  await WAIT(20000);
+
+  setProgress("🎯 TO-BE, Texniki Təsir, İnteqrasiyalar...", 2);
+  const p2 = safeJSON(await askGroq(`${SYS}
+
+Elicitation qeydləri:
+${input}
+
+Aşağıdakı JSON-u doldur:
+{
+  "tobeDescription": "...",
+  "customerJourney": [{"step": 1, "action": "..."}],
+  "participants": [{"party": "...", "role": "..."}],
+  "technicalSystems": [{"system": "...", "role": "...", "note": "..."}],
+  "internalIntegrations": [{"system": "...", "purpose": "..."}],
+  "externalIntegrations": [{"system": "...", "purpose": "...", "status": "..."}],
+  "dependencies": [{"item": "...", "status": "...", "note": "..."}]
+}`));
+
+  if (p2) {
+    r.iad_tobe = { description: p2.tobeDescription, journey: p2.customerJourney||[], participants: p2.participants||[] };
+    r.iad_technical = { systems: p2.technicalSystems||[], internal: p2.internalIntegrations||[], external: p2.externalIntegrations||[], dependencies: p2.dependencies||[] };
+  }
+
+  await WAIT(20000);
+
+  setProgress("⚠️ Funksional davranış, sərhəd halları, risklər...", 3);
+  const p3 = safeJSON(await askGroq(`${SYS}
+
+Elicitation qeydləri:
+${input}
+
+Aşağıdakı JSON-u doldur:
+{
+  "functionalPrinciples": ["...", "..."],
+  "businessRules": ["...", "..."],
+  "edgeCases": [{"id": "EC-001", "scenario": "...", "result": "..."}],
+  "existingRisks": [{"id": "R-001", "risk": "...", "impact": "Yüksək", "mitigation": "..."}],
+  "anticipatedRisks": [{"id": "R-006", "risk": "...", "impact": "Orta", "note": "..."}]
+}`));
+
+  if (p3) {
+    r.iad_risks = {
+      functionalPrinciples: p3.functionalPrinciples||[],
+      businessRules: p3.businessRules||[],
+      edgeCases: p3.edgeCases||[],
+      existing: p3.existingRisks||[],
+      anticipated: p3.anticipatedRisks||[]
+    };
+  }
+
+  setProgress("✅ IAD hazırdır!", 3);
+  return r;
 }
 
 // ═══ RENDER ═══
