@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Document Generator — IT BA55B9</title>
+<title>Document Generator — IT BA</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
@@ -162,7 +162,7 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
 
 <script>
 // ═══ API KEY ═══
-const ANTHROPIC_KEY = "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";
+const ANTHROPIC_KEY = "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";
 
 // ═══ FIREBASE ═══
 firebase.initializeApp({
@@ -477,29 +477,50 @@ async function generateIAD(input) {
 
 // Review Generate
 async function generateReview(result, type, input) {
-  const docJson = JSON.stringify(result, null, 2);
   const isTTS = type === 'tts';
-  const prompt = `Sən bank sektorunda 15+ illik təcrübəsi olan Senior IT Biznes Analitik və audit mütəxəssisisən. Aşağıdakı ${isTTS?'TTS':'IAD'} sənədini peşəkar baxışla analiz et.
 
-Analiz perspektivləri:
-1. PROSES BAXIŞI — axış tam və ardıcıldırmı
-2. REGULYATİV BAXIŞ — AML, GDPR, Mərkəzi Bank tələbləri nəzərə alınıbmı
-3. TEXNİKİ BAXIŞ — inteqrasiyalar, error handling, timeout, retry
-4. RİSK BAXIŞI — hansı risklər qeyd edilməyib
-5. HÜQUQİ BAXIŞ — imza, müqavilə, sənəd saxlama
-${isTTS ? '6. QA BAXIŞI — acceptance criteria test üçün kifayətlidirmi' : '6. BİZNES BAXIŞI — biznes ehtiyacı aydın ifadə olunubmu'}
-7. STAKEHOLDER BAXIŞI — bütün maraqlı tərəflər müəyyən olunubmu
+  // Hissə 1: Ümumi qiymət + güclü tərəflər + kritik/regulyativ boşluqlar
+  const prompt1 = `Sən bank sektorunda 15+ illik təcrübəsi olan Senior IT Biznes Analitik və audit mütəxəssisisən. Aşağıdakı ${isTTS?'TTS':'IAD'} sənədini analiz et.
 
-Elicitation qeydləri:
+Elicitation:
 ${input}
 
-Sənəd:
-${docJson}
+Sənəd (xülasə):
+${JSON.stringify(result).substring(0, 3000)}
 
-JSON cavab ver:
-{"overallAssessment":"...","strengths":["..."],"criticalGaps":[{"area":"...","issue":"...","recommendation":"..."}],"regulatoryGaps":[{"requirement":"...","issue":"...","recommendation":"..."}],"technicalGaps":[{"area":"...","issue":"...","recommendation":"..."}],"riskGaps":[{"risk":"...","recommendation":"..."}],"${isTTS?'qaGaps':'businessGaps'}":[{"area":"...","issue":"...","recommendation":"..."}],"priorityActions":["1. ...","2. ...","3. ..."]}`;
-  const raw = await callClaude(prompt);
-  return safeJSON(raw) || { status: 'error', message: 'Review parse edilə bilmədi.' };
+Yalnız bu JSON formatında cavab ver, başqa heç nə yazma:
+{"overallAssessment":"2-3 cümlə ümumi qiymət","strengths":["güclü tərəf 1","güclü tərəf 2","güclü tərəf 3"],"criticalGaps":[{"area":"sahə","issue":"problem","recommendation":"tövsiyə"}],"regulatoryGaps":[{"requirement":"tələb","issue":"boşluq","recommendation":"tövsiyə"}]}`;
+
+  // Hissə 2: Texniki/risk/QA boşluqlar + prioritet tədbirlər
+  const prompt2 = `Sən bank sektorunda 15+ illik təcrübəsi olan Senior IT Biznes Analitik və audit mütəxəssisisən. Aşağıdakı ${isTTS?'TTS':'IAD'} sənədini analiz et.
+
+Elicitation:
+${input}
+
+Sənəd (xülasə):
+${JSON.stringify(result).substring(0, 3000)}
+
+Yalnız bu JSON formatında cavab ver, başqa heç nə yazma:
+{"technicalGaps":[{"area":"sahə","issue":"problem","recommendation":"tövsiyə"}],"riskGaps":[{"risk":"risk adı","recommendation":"tövsiyə"}],"${isTTS?'qaGaps':'businessGaps'}":[{"area":"sahə","issue":"problem","recommendation":"tövsiyə"}],"priorityActions":["1. birinci vacib addım","2. ikinci vacib addım","3. üçüncü vacib addım"]}`;
+
+  const [r1, r2] = await Promise.all([
+    callClaude(prompt1).then(safeJSON).catch(() => null),
+    callClaude(prompt2).then(safeJSON).catch(() => null)
+  ]);
+
+  if (!r1 && !r2) return { status: 'error', message: 'Review hazırlanarkən xəta baş verdi.' };
+
+  return {
+    overallAssessment: r1?.overallAssessment || '',
+    strengths: r1?.strengths || [],
+    criticalGaps: r1?.criticalGaps || [],
+    regulatoryGaps: r1?.regulatoryGaps || [],
+    technicalGaps: r2?.technicalGaps || [],
+    riskGaps: r2?.riskGaps || [],
+    qaGaps: r2?.qaGaps || [],
+    businessGaps: r2?.businessGaps || [],
+    priorityActions: r2?.priorityActions || []
+  };
 }
 
 // ═══ RENDER ═══
@@ -526,7 +547,7 @@ function renderContent() {
       </div>
       <div id="sec-inner">${html}</div>`;
     window._currentPlainText = plainText;
-    if (activeSection === 'modelling') {
+    if (['modelling','iad_asis','iad_tobe'].includes(activeSection)) {
       setTimeout(() => mermaid.run({ nodes: document.querySelectorAll('.mermaid') }), 100);
     }
   } catch(e) {
