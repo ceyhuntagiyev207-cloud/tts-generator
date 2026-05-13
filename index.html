@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Document Generator — IT BA</title>
+<title>Document Generator — IT BA555</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
@@ -23,7 +23,7 @@ input:focus,textarea:focus{border-color:#2563eb!important;outline:none;box-shado
 .inp{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:11px 14px;font-size:14px}
 label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px}
 .mermaid svg{max-width:100%;height:auto}
-.tab-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;border-left:3px solid transparent;background:white;transition:all 0.15s}
+.tab-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;border-left:3px solid transparent;background:white;transition:all 0.15s}
 .tab-item:hover{background:#f8fafc;border-left-color:#c7d2fe}
 .tab-item.active{background:linear-gradient(135deg,#eff6ff,#eef2ff);border-left-color:#6366f1}
 .tab-item.active .tab-label{color:#4f46e5;font-weight:600}
@@ -81,7 +81,6 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
   </div>
 
   <div style="padding:20px;max-width:1200px;margin:0 auto;display:flex;gap:20px;align-items:flex-start">
-
     <!-- Sol panel -->
     <div style="width:260px;flex-shrink:0">
       <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.06)">
@@ -93,13 +92,13 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
           <input id="search-input" type="text" placeholder="🔍 Sənəd axtar..." oninput="filterDocs()"
             style="width:100%;border:1.5px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:12px;outline:none"/>
         </div>
-        <div id="docs-list-tts" style="max-height:280px;overflow-y:auto">
+        <div id="docs-list-tts" style="max-height:260px;overflow-y:auto">
           <div style="padding:16px;text-align:center;color:#94a3b8;font-size:12px">Yüklənir...</div>
         </div>
         <div style="background:#166534;color:white;padding:11px 16px;border-top:2px solid #e2e8f0">
           <span style="font-weight:700;font-size:12px">📋 İAD Sənədləri</span>
         </div>
-        <div id="docs-list-iad" style="max-height:280px;overflow-y:auto">
+        <div id="docs-list-iad" style="max-height:260px;overflow-y:auto">
           <div style="padding:16px;text-align:center;color:#94a3b8;font-size:12px">Yüklənir...</div>
         </div>
       </div>
@@ -107,7 +106,6 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
 
     <!-- Sağ panel -->
     <div style="flex:1;min-width:0">
-
       <!-- Boş -->
       <div id="panel-empty" class="card" style="text-align:center;padding:48px">
         <div style="font-size:48px;margin-bottom:12px">📄</div>
@@ -138,7 +136,7 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
         <div style="background:#f1f5f9;border-radius:100px;height:8px;overflow:hidden;max-width:400px;margin:0 auto">
           <div id="prog-bar" style="background:linear-gradient(90deg,#2563eb,#7c3aed);height:100%;border-radius:100px;width:0%;transition:width 0.5s"></div>
         </div>
-        <div id="prog-step" style="font-size:12px;color:#94a3b8;margin-top:8px">0 / 3</div>
+        <div id="prog-step" style="font-size:12px;color:#94a3b8;margin-top:8px"></div>
       </div>
 
       <!-- Görüntü -->
@@ -158,14 +156,15 @@ label{font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5
           <div id="sec-content" style="flex:1;padding:20px;overflow-y:auto;height:100%;min-width:0"></div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
 <script>
-// ═══ CONFIG ═══
-const GROQ_KEY = "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";
+// ═══ API KEY ═══
+const ANTHROPIC_KEY = "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";
+
+// ═══ FIREBASE ═══
 firebase.initializeApp({
   apiKey: "AIzaSyAnwjfcronxcuziIBONSA1z1Y4K9_WO18g",
   authDomain: "tts-generator-556a8.firebaseapp.com",
@@ -182,7 +181,6 @@ let currentUser = null, currentDocId = null, currentResult = null,
     currentDocType = 'tts', activeSection = 'general', userDocs = [], userIADs = [];
 
 // ═══ TABS ═══
-// TTS_TABS sonuna review əlavə et
 const TTS_TABS = [
   {key:"general",      code:"1.1",  label:"Ümumi Məlumat"},
   {key:"stakeholders", code:"1.3",  label:"Maraqlı Tərəflər"},
@@ -203,14 +201,15 @@ const TTS_TABS = [
   {key:"acceptance",   code:"13",   label:"Qəbul Meyarları"},
   {key:"review",       code:"🔍",   label:"Review"},
 ];
+
 const IAD_TABS = [
-  {key:"iad_general",     code:"1.1", label:"Ümumi Məlumat"},
-  {key:"iad_asis",        code:"2.1", label:"Cari Vəziyyət (AS-IS)"},
-  {key:"iad_needs",       code:"2.2", label:"Biznes Ehtiyacları"},
-  {key:"iad_tobe",        code:"3.1", label:"Gözlənilən Vəziyyət (TO-BE)"},
-  {key:"iad_technical",   code:"3.2", label:"Texniki Təsir"},
-  {key:"iad_risks",       code:"3.3", label:"Risklər"},
-  {key:"review",          code:"🔍",  label:"Review"},
+  {key:"iad_general",   code:"1.1", label:"Ümumi Məlumat"},
+  {key:"iad_asis",      code:"2.1", label:"Cari Vəziyyət (AS-IS)"},
+  {key:"iad_needs",     code:"2.2", label:"Biznes Ehtiyacları"},
+  {key:"iad_tobe",      code:"3.1", label:"Gözlənilən Vəziyyət"},
+  {key:"iad_technical", code:"3.2", label:"Texniki Təsir"},
+  {key:"iad_risks",     code:"3.3", label:"Risklər"},
+  {key:"review",        code:"🔍",  label:"Review"},
 ];
 
 const EXAMPLE = `Birbank Biznes tətbiqində mövcud onboarding prosesində dəyişiklik tələb olunur.
@@ -293,6 +292,14 @@ window.addEventListener('load', () => { const s = getSession(); if (s) { current
 function loadExample() { $('doc-input').value = EXAMPLE; $('doc-title').value = 'Birbank Biznes Onboarding Dəyişikliyi'; }
 function showNewDoc() { currentDocId=null; hideErr('gen-err'); $('doc-title').value=''; $('doc-input').value=''; showPanel('new'); renderDocsList(); }
 
+function filterDocs() {
+  const q = ($('search-input')?.value||'').toLowerCase().trim();
+  renderGroup('docs-list-tts', q ? userDocs.filter(d=>d.title.toLowerCase().includes(q)) : userDocs);
+  renderGroup('docs-list-iad', q ? userIADs.filter(d=>d.title.toLowerCase().includes(q)) : userIADs);
+}
+
+function renderDocsList() { filterDocs(); }
+
 async function loadDocs() {
   try {
     let all = [];
@@ -308,18 +315,6 @@ async function loadDocs() {
   } catch { userDocs = []; userIADs = []; }
   renderDocsList();
   if (!userDocs.length && !userIADs.length) showPanel('empty');
-}
-
-function filterDocs() {
-  const q = ($('search-input')?.value || '').toLowerCase().trim();
-  const filteredTTS = q ? userDocs.filter(d => d.title.toLowerCase().includes(q)) : userDocs;
-  const filteredIAD = q ? userIADs.filter(d => d.title.toLowerCase().includes(q)) : userIADs;
-  renderGroup('docs-list-tts', filteredTTS);
-  renderGroup('docs-list-iad', filteredIAD);
-}
-
-function renderDocsList() {
-  filterDocs();
 }
 
 function renderGroup(elId, docs) {
@@ -343,17 +338,12 @@ function renderGroup(elId, docs) {
 function openDoc(id) {
   const doc = [...userDocs, ...userIADs].find(d => d.id === id);
   if (!doc) return;
-  currentDocId = id;
-  currentResult = doc.result;
-  currentDocType = doc.type || 'tts';
+  currentDocId = id; currentResult = doc.result; currentDocType = doc.type || 'tts';
   activeSection = currentDocType === 'iad' ? 'iad_general' : 'general';
   $('view-title').textContent = doc.title;
   const date = doc.createdAt ? new Date(doc.createdAt.seconds*1000).toLocaleDateString('az-AZ') : '—';
   $('view-date').textContent = date + ' · ' + (doc.userName||'') + (currentDocType==='iad'?' · İAD':' · TTS');
-  showPanel('view');
-  renderDocsList();
-  renderTabs();
-  renderContent();
+  showPanel('view'); renderDocsList(); renderTabs(); renderContent();
 }
 
 async function deleteDoc(id) {
@@ -364,6 +354,43 @@ async function deleteDoc(id) {
   if (!userDocs.length && !userIADs.length) showPanel('empty');
 }
 
+// ═══ API ═══
+async function callClaude(prompt) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": ANTHROPIC_KEY,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 4000,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'API xətası: ' + res.status); }
+  const d = await res.json();
+  return d.content[0].text.trim();
+}
+
+function safeJSON(t) {
+  try { return JSON.parse(t.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim()); } catch {}
+  const a = t.match(/\[[\s\S]*\]/); if (a) try { return JSON.parse(a[0]); } catch {}
+  const o = t.match(/\{[\s\S]*\}/); if (o) try { return JSON.parse(o[0]); } catch {}
+  return null;
+}
+
+function setProgress(msg, step, total) {
+  $('prog-msg').textContent = msg;
+  $('prog-bar').style.width = ((step/total)*100)+'%';
+  $('prog-step').textContent = step+' / '+total;
+}
+
+const SYS = `Sən bank IT Biznes Analitik köməkçisisən. Elicitation qeydlərinə əsasən sənəd hazırlayırsan. Həmişə təmiz JSON qaytar, heç bir izahat yazma, markdown istifadə etmə.`;
+const WAIT = ms => new Promise(r => setTimeout(r, ms));
+
 // ═══ GENERATE ═══
 async function startGenerate(type) {
   const title = val('doc-title'), input = val('doc-input');
@@ -372,16 +399,14 @@ async function startGenerate(type) {
   hideErr('gen-err'); showPanel('loading');
   try {
     const result = type === 'iad' ? await generateIAD(input) : await generateTTS(input);
-
-    // Review generasiya et — ayrıca try/catch, xəta olsa sənəd yenə açılır
-    setProgress("🔍 Review hazırlanır...", type === 'iad' ? 4 : 10);
+    const total = type === 'iad' ? 4 : 10;
+    setProgress("🔍 Review hazırlanır...", total, total);
     try {
       result.review = await generateReview(result, type, input);
     } catch(re) {
       console.warn('Review xətası:', re);
       result.review = { status: 'error', message: 'Review hazırlanarkən xəta baş verdi.' };
     }
-
     const ref = await db.collection('documents').add({
       userId: currentUser.id, userName: currentUser.name||currentUser.email,
       title, result, type, createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -395,281 +420,89 @@ async function startGenerate(type) {
   } catch(e) { showPanel('new'); showErr('gen-err','Xəta: '+e.message); }
 }
 
-function setProgress(msg, step) {
-  $('prog-msg').textContent = msg;
-  $('prog-bar').style.width = ((step/3)*100)+'%';
-  $('prog-step').textContent = step+' / 3';
-}
-
-async function askGroq(prompt) {
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method:"POST",
-    headers:{"content-type":"application/json","authorization":`Bearer ${GROQ_KEY}`},
-    body: JSON.stringify({ model:"llama-3.3-70b-versatile", temperature:0.2, max_tokens:2000, messages:[{role:"user",content:prompt}] })
-  });
-  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message||'API xətası'); }
-  return res.json().then(d => d.choices[0].message.content.trim());
-}
-
-function safeJSON(t) {
-  try { return JSON.parse(t.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim()); } catch {}
-  const a = t.match(/\[[\s\S]*\]/); if (a) try { return JSON.parse(a[0]); } catch {}
-  const o = t.match(/\{[\s\S]*\}/); if (o) try { return JSON.parse(o[0]); } catch {}
-  return null;
-}
-
-const SYS = `Sən bank IT Biznes Analitik köməkçisisən. Elicitation qeydlərinə əsasən sənəd hazırlayırsan. Həmişə təmiz JSON qaytar, heç bir izahat yazma, markdown istifadə etmə.`;
-const WAIT = ms => new Promise(r => setTimeout(r, ms));
-
+// TTS Generate
 async function generateTTS(input) {
   const date = new Date().toLocaleDateString('az-AZ'), r = {};
-
-  // CALL 1: Ümumi məlumat, AS-IS/TO-BE, Stakeholderlər, Terminlər, Proses
-  setProgress("📋 Ümumi məlumat, stakeholderlər, proses analiz edilir...", 1);
-  const p1 = safeJSON(await askGroq(`${SYS}
-
-Elicitation qeydləri:
-${input}
-
-Aşağıdakı JSON-u doldur. Hər sahəni ətraflı doldur, boş buraxma:
-{
-  "documentTitle": "...",
-  "documentVersion": "1.0",
-  "documentDate": "${date}",
-  "summary": "...",
-  "asis": "...",
-  "businessneed": "...",
-  "tobe": "...",
-  "process": "...",
-  "stakeholders": [{"role":"...","name":"TBD","responsibility":"..."}],
-  "users": [{"category":"...","description":"...","access":"..."}],
-  "terms": [{"term":"...","definition":"..."}],
-  "acronyms": [{"acronym":"...","description":"..."}]
-}`));
-
-  if (p1) {
-    r.general = { documentTitle:p1.documentTitle, documentVersion:p1.documentVersion, documentDate:date, itBusinessAnalysts:currentUser.name||currentUser.email, jiraLink:"—" };
-    r.summary = p1.summary;
-    r.asis = p1.asis;
-    r.businessneed = p1.businessneed;
-    r.tobe = p1.tobe;
-    r.process = p1.process;
-    r.stakeholders = p1.stakeholders||[];
-    r.users = p1.users||[];
-    r.terms = p1.terms||[];
-    r.acronyms = p1.acronyms||[];
+  const calls = [
+    { msg:"📋 Ümumi məlumat...",     p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"documentTitle":"...","documentVersion":"1.0","documentDate":"${date}","summary":"..."}` },
+    { msg:"🔍 AS-IS / TO-BE...",      p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"asis":"...","businessneed":"...","tobe":"..."}` },
+    { msg:"👥 Stakeholderlər...",     p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"stakeholders":[{"role":"...","name":"TBD","responsibility":"..."}],"users":[{"category":"...","description":"...","access":"..."}]}` },
+    { msg:"📖 Terminlər / Proses...", p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"terms":[{"term":"...","definition":"..."}],"acronyms":[{"acronym":"...","description":"..."}],"process":"..."}` },
+    { msg:"🔗 İnteqrasiyalar...",     p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"external":[{"system":"...","type":"REST API","description":"..."}],"internal":[{"system":"...","type":"...","description":"..."}],"dependencies":[{"item":"...","description":"..."}]}` },
+    { msg:"⚙️ Servis detalları...",   p:`${SYS}\n\nElicitation:\n${input}\n\nJSON (bodyExample sadə string):\n{"method":"POST","url":"/api/v1/...","description":"...","bodyExample":"field1=value1","successResponse":"status=success","errorResponse":"code=400","errorCodes":[{"code":"400","description":"..."}]}` },
+    { msg:"✅ Tələblər...",           p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"functional":[{"id":"FR-001","requirement":"...","priority":"High"}],"nonfunctional":[{"id":"NFR-001","requirement":"...","category":"Performance"}]}` },
+    { msg:"⚠️ Risklər...",           p:`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"technical":[{"risk":"...","impact":"...","mitigation":"..."}],"business":[{"risk":"...","impact":"...","mitigation":"..."}],"acceptance":[{"id":"AC-001","criteria":"...","testCase":"..."}]}` },
+    { msg:"📊 Diaqramlar...",         p:`${SYS}\n\nElicitation:\n${input}\n\nMermaid sintaksisi ilə JSON:\n{"bpmn":"flowchart TD\\n  A([Başla]) --> B[...]\\n  B --> C([Bitir])","sequence":"sequenceDiagram\\n  participant User\\n  participant System\\n  User->>System: sorğu\\n  System-->>User: cavab","erd":"erDiagram\\n  CUSTOMER ||--o{ ORDER : places\\n  CUSTOMER { string name }\\n  ORDER { int id }"}` },
+  ];
+  for (let i = 0; i < calls.length; i++) {
+    setProgress(calls[i].msg, i+1, 9);
+    const p = safeJSON(await callClaude(calls[i].p));
+    if (!p) continue;
+    if (i===0) { r.general={documentTitle:p.documentTitle,documentVersion:p.documentVersion,documentDate:date,itBusinessAnalysts:currentUser.name||currentUser.email,jiraLink:"—"}; r.summary=p.summary; }
+    else if (i===1) { r.asis=p.asis; r.businessneed=p.businessneed; r.tobe=p.tobe; }
+    else if (i===2) { r.stakeholders=p.stakeholders||[]; r.users=p.users||[]; }
+    else if (i===3) { r.terms=p.terms||[]; r.acronyms=p.acronyms||[]; r.process=p.process; }
+    else if (i===4) { r.integrations={external:p.external||[],internal:p.internal||[],dependencies:p.dependencies||[]}; }
+    else if (i===5) { r.service=p; }
+    else if (i===6) { r.functional=p.functional||[]; r.nonfunctional=p.nonfunctional||[]; }
+    else if (i===7) { r.risks={technical:p.technical||[],business:p.business||[]}; r.acceptance=p.acceptance||[]; }
+    else if (i===8) { r.modelling={bpmn:p.bpmn||'',sequence:p.sequence||'',erd:p.erd||''}; }
   }
-
-  await WAIT(20000);
-
-  // CALL 2: İnteqrasiyalar, Servis detalları, Funksional/Qeyri-funksional tələblər
-  setProgress("🔗 İnteqrasiyalar, servis detalları, tələblər analiz edilir...", 2);
-  const p2 = safeJSON(await askGroq(`${SYS}
-
-Elicitation qeydləri:
-${input}
-
-Aşağıdakı JSON-u doldur. Hər sahəni ətraflı doldur, boş buraxma:
-{
-  "external": [{"system":"...","type":"REST API","description":"..."}],
-  "internal": [{"system":"...","type":"...","description":"..."}],
-  "dependencies": [{"item":"...","description":"..."}],
-  "serviceMethod": "POST",
-  "serviceUrl": "/api/v1/...",
-  "serviceDescription": "...",
-  "bodyExample": "field1=value1, field2=value2",
-  "successResponse": "status=success, data=...",
-  "errorResponse": "code=400, message=...",
-  "errorCodes": [{"code":"400","description":"..."},{"code":"500","description":"..."}],
-  "functional": [{"id":"FR-001","requirement":"...","priority":"High"},{"id":"FR-002","requirement":"...","priority":"Medium"}],
-  "nonfunctional": [{"id":"NFR-001","requirement":"...","category":"Performance"},{"id":"NFR-002","requirement":"...","category":"Security"}]
-}`));
-
-  if (p2) {
-    r.integrations = { external:p2.external||[], internal:p2.internal||[], dependencies:p2.dependencies||[] };
-    r.service = { method:p2.serviceMethod, url:p2.serviceUrl, description:p2.serviceDescription, bodyExample:p2.bodyExample, successResponse:p2.successResponse, errorResponse:p2.errorResponse, errorCodes:p2.errorCodes||[] };
-    r.functional = p2.functional||[];
-    r.nonfunctional = p2.nonfunctional||[];
-  }
-
-  await WAIT(20000);
-
-  // CALL 3: Risklər, Qəbul meyarları, Diaqramlar
-  setProgress("⚠️ Risklər, qəbul meyarları, diaqramlar hazırlanır...", 3);
-  const p3 = safeJSON(await askGroq(`${SYS}
-
-Elicitation qeydləri:
-${input}
-
-Aşağıdakı JSON-u doldur. Hər sahəni ətraflı doldur, boş buraxma. Mermaid diaqramları real proses axışını əks etdirsin:
-{
-  "technicalRisks": [{"risk":"...","impact":"...","mitigation":"..."}],
-  "businessRisks": [{"risk":"...","impact":"...","mitigation":"..."}],
-  "acceptance": [{"id":"AC-001","criteria":"...","testCase":"..."},{"id":"AC-002","criteria":"...","testCase":"..."}],
-  "bpmn": "flowchart TD\\n  A([Başla]) --> B[...]\\n  B --> C([Bitir])",
-  "sequence": "sequenceDiagram\\n  participant User\\n  participant System\\n  User->>System: sorğu\\n  System-->>User: cavab",
-  "erd": "erDiagram\\n  ENTITY1 ||--o{ ENTITY2 : has\\n  ENTITY1 { string field1 }\\n  ENTITY2 { int id }"
-}`));
-
-  if (p3) {
-    r.risks = { technical:p3.technicalRisks||[], business:p3.businessRisks||[] };
-    r.acceptance = p3.acceptance||[];
-    r.modelling = { bpmn:p3.bpmn||'', sequence:p3.sequence||'', erd:p3.erd||'' };
-  }
-
-  setProgress("✅ TTS hazırdır!", 3);
   return r;
 }
 
+// IAD Generate
 async function generateIAD(input) {
   const date = new Date().toLocaleDateString('az-AZ'), r = {};
-
-  setProgress("📋 Ümumi məlumat, AS-IS, Biznes Ehtiyacları...", 1);
-  const p1 = safeJSON(await askGroq(`${SYS}
-
-Elicitation qeydləri:
-${input}
-
-Aşağıdakı IAD (Initial Analysis Document) JSON-unu doldur. Hər sahəni ətraflı doldur:
-{
-  "documentTitle": "...",
-  "documentVersion": "1.0",
-  "documentDate": "${date}",
-  "asis": "...",
-  "businessNeedsMain": [{"number": 1, "need": "..."}],
-  "regulatoryRequirements": ["...", "..."],
-  "legalRequirements": ["...", "..."],
-  "internalPolicies": ["...", "..."]
-}`));
-
+  setProgress("📋 Ümumi məlumat, AS-IS, Biznes Ehtiyacları...", 1, 3);
+  const p1 = safeJSON(await callClaude(`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"documentTitle":"...","documentVersion":"1.0","documentDate":"${date}","asis":"...","businessNeedsMain":[{"number":1,"need":"..."}],"regulatoryRequirements":["..."],"legalRequirements":["..."],"internalPolicies":["..."]}`));
   if (p1) {
-    r.iad_general = { documentTitle: p1.documentTitle, documentVersion: p1.documentVersion, documentDate: date, analyst: currentUser.name||currentUser.email };
+    r.iad_general = { documentTitle:p1.documentTitle, documentVersion:p1.documentVersion, documentDate:date, analyst:currentUser.name||currentUser.email };
     r.iad_asis = p1.asis;
-    r.iad_needs = { main: p1.businessNeedsMain||[], regulatory: p1.regulatoryRequirements||[], legal: p1.legalRequirements||[], internal: p1.internalPolicies||[] };
+    r.iad_needs = { main:p1.businessNeedsMain||[], regulatory:p1.regulatoryRequirements||[], legal:p1.legalRequirements||[], internal:p1.internalPolicies||[] };
   }
-
-  await WAIT(20000);
-
-  setProgress("🎯 TO-BE, Texniki Təsir, İnteqrasiyalar...", 2);
-  const p2 = safeJSON(await askGroq(`${SYS}
-
-Elicitation qeydləri:
-${input}
-
-Aşağıdakı JSON-u doldur:
-{
-  "tobeDescription": "...",
-  "customerJourney": [{"step": 1, "action": "..."}],
-  "participants": [{"party": "...", "role": "..."}],
-  "technicalSystems": [{"system": "...", "role": "...", "note": "..."}],
-  "internalIntegrations": [{"system": "...", "purpose": "..."}],
-  "externalIntegrations": [{"system": "...", "purpose": "...", "status": "..."}],
-  "dependencies": [{"item": "...", "status": "...", "note": "..."}]
-}`));
-
+  setProgress("🎯 TO-BE, Texniki Təsir, İnteqrasiyalar...", 2, 3);
+  const p2 = safeJSON(await callClaude(`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"tobeDescription":"...","customerJourney":[{"step":1,"action":"..."}],"participants":[{"party":"...","role":"..."}],"technicalSystems":[{"system":"...","role":"...","note":"..."}],"internalIntegrations":[{"system":"...","purpose":"..."}],"externalIntegrations":[{"system":"...","purpose":"...","status":"..."}],"dependencies":[{"item":"...","status":"...","note":"..."}]}`));
   if (p2) {
-    r.iad_tobe = { description: p2.tobeDescription, journey: p2.customerJourney||[], participants: p2.participants||[] };
-    r.iad_technical = { systems: p2.technicalSystems||[], internal: p2.internalIntegrations||[], external: p2.externalIntegrations||[], dependencies: p2.dependencies||[] };
+    r.iad_tobe = { description:p2.tobeDescription, journey:p2.customerJourney||[], participants:p2.participants||[] };
+    r.iad_technical = { systems:p2.technicalSystems||[], internal:p2.internalIntegrations||[], external:p2.externalIntegrations||[], dependencies:p2.dependencies||[] };
   }
-
-  await WAIT(20000);
-
-  setProgress("⚠️ Funksional davranış, sərhəd halları, risklər...", 3);
-  const p3 = safeJSON(await askGroq(`${SYS}
-
-Elicitation qeydləri:
-${input}
-
-Aşağıdakı JSON-u doldur:
-{
-  "functionalPrinciples": ["...", "..."],
-  "businessRules": ["...", "..."],
-  "edgeCases": [{"id": "EC-001", "scenario": "...", "result": "..."}],
-  "existingRisks": [{"id": "R-001", "risk": "...", "impact": "Yüksək", "mitigation": "..."}],
-  "anticipatedRisks": [{"id": "R-006", "risk": "...", "impact": "Orta", "note": "..."}]
-}`));
-
+  setProgress("⚠️ Funksional davranış, sərhəd halları, risklər...", 3, 3);
+  const p3 = safeJSON(await callClaude(`${SYS}\n\nElicitation:\n${input}\n\nJSON:\n{"functionalPrinciples":["..."],"businessRules":["..."],"edgeCases":[{"id":"EC-001","scenario":"...","result":"..."}],"existingRisks":[{"id":"R-001","risk":"...","impact":"Yüksək","mitigation":"..."}],"anticipatedRisks":[{"id":"R-006","risk":"...","impact":"Orta","note":"..."}]}`));
   if (p3) {
-    r.iad_risks = {
-      functionalPrinciples: p3.functionalPrinciples||[],
-      businessRules: p3.businessRules||[],
-      edgeCases: p3.edgeCases||[],
-      existing: p3.existingRisks||[],
-      anticipated: p3.anticipatedRisks||[]
-    };
+    r.iad_risks = { functionalPrinciples:p3.functionalPrinciples||[], businessRules:p3.businessRules||[], edgeCases:p3.edgeCases||[], existing:p3.existingRisks||[], anticipated:p3.anticipatedRisks||[] };
   }
-
-  setProgress("✅ IAD hazırdır!", 3);
   return r;
 }
 
+// Review Generate
 async function generateReview(result, type, input) {
-  await WAIT(20000);
   const docJson = JSON.stringify(result, null, 2);
-  const prompt = type === 'tts'
-    ? `Sən bank sektorunda 15+ illik təcrübəsi olan Senior IT Biznes Analitik və audit mütəxəssisisən. Aşağıdakı TTS (Technical Specification) sənədini peşəkar baxışla analiz et.
+  const isTTS = type === 'tts';
+  const prompt = `Sən bank sektorunda 15+ illik təcrübəsi olan Senior IT Biznes Analitik və audit mütəxəssisisən. Aşağıdakı ${isTTS?'TTS':'IAD'} sənədini peşəkar baxışla analiz et.
 
-Analiz zamanı aşağıdakı perspektivlərdən bax:
-1. PROSES BAXIŞI — axış tam və ardıcıldırmı, boşluqlar varmı
-2. REGULYATİV BAXIŞ — AML, GDPR, Mərkəzi Bank tələbləri, müştəri identifikasiyası qaydaları nəzərə alınıbmı
-3. TEXNİKİ BAXIŞ — inteqrasiyalar, error handling, timeout, retry mexanizmləri tam müəyyənləşdirilib mi
-4. RİSK BAXIŞI — hansı risklər qeyd edilməyib, hansı ssenarilər nəzərdən qaçırılıb
-5. HÜQUQİ BAXIŞ — imza, müqavilə, sənəd saxlama tələbləri
-6. QA BAXIŞI — acceptance criteria test üçün kifayətlidirmi, edge case-lər əhatə olunubmu
+Analiz perspektivləri:
+1. PROSES BAXIŞI — axış tam və ardıcıldırmı
+2. REGULYATİV BAXIŞ — AML, GDPR, Mərkəzi Bank tələbləri nəzərə alınıbmı
+3. TEXNİKİ BAXIŞ — inteqrasiyalar, error handling, timeout, retry
+4. RİSK BAXIŞI — hansı risklər qeyd edilməyib
+5. HÜQUQİ BAXIŞ — imza, müqavilə, sənəd saxlama
+${isTTS ? '6. QA BAXIŞI — acceptance criteria test üçün kifayətlidirmi' : '6. BİZNES BAXIŞI — biznes ehtiyacı aydın ifadə olunubmu'}
 7. STAKEHOLDER BAXIŞI — bütün maraqlı tərəflər müəyyən olunubmu
 
 Elicitation qeydləri:
 ${input}
 
-TTS Sənədi:
+Sənəd:
 ${docJson}
 
-Aşağıdakı JSON formatında cavab ver:
-{
-  "overallAssessment": "Sənədin ümumi qiymətləndirilməsi — 2-3 cümlə",
-  "strengths": ["Güclü tərəf 1", "Güclü tərəf 2"],
-  "criticalGaps": [{"area": "sahə", "issue": "problem", "recommendation": "tövsiyə"}],
-  "regulatoryGaps": [{"requirement": "tələb", "issue": "boşluq", "recommendation": "tövsiyə"}],
-  "technicalGaps": [{"area": "sahə", "issue": "problem", "recommendation": "tövsiyə"}],
-  "riskGaps": [{"risk": "risk", "recommendation": "tövsiyə"}],
-  "qaGaps": [{"area": "sahə", "issue": "problem", "recommendation": "tövsiyə"}],
-  "priorityActions": ["1. Ən vacib addım", "2. İkinci vacib addım", "3. Üçüncü vacib addım"]
-}`
-    : `Sən bank sektorunda 15+ illik təcrübəsi olan Senior IT Biznes Analitik və audit mütəxəssisisən. Aşağıdakı IAD (Initial Analysis Document) sənədini peşəkar baxışla analiz et.
-
-Analiz zamanı aşağıdakı perspektivlərdən bax:
-1. BİZNES ƏSASLANDIRMASI — biznes ehtiyacı aydın ifadə olunubmu, ROI/dəyər göstərilibmi
-2. AS-IS ANALİZİ — mövcud vəziyyət tam təsvir olunubmu, problem köküncə müəyyənləşdirilib mi
-3. TO-BE VİZYONU — gözlənilən vəziyyət konkret və ölçüləbilirmi
-4. REGULYATİV UYĞUNLUQ — bank tənzimləmə tələbləri nəzərə alınıbmı
-5. TEXNİKİ FƏALİYYƏT QABİLİYYƏTİ — texniki asılılıqlar real qiymətləndirilib mi
-6. RİSK ƏHATƏSI — bütün əsas risklər müəyyənləşdirilib mi
-7. STAKEHOLDER ƏHATƏSI — bütün maraqlı tərəflər müəyyən olunubmu
-
-Elicitation qeydləri:
-${input}
-
-IAD Sənədi:
-${docJson}
-
-Aşağıdakı JSON formatında cavab ver:
-{
-  "overallAssessment": "Sənədin ümumi qiymətləndirilməsi — 2-3 cümlə",
-  "strengths": ["Güclü tərəf 1", "Güclü tərəf 2"],
-  "criticalGaps": [{"area": "sahə", "issue": "problem", "recommendation": "tövsiyə"}],
-  "regulatoryGaps": [{"requirement": "tələb", "issue": "boşluq", "recommendation": "tövsiyə"}],
-  "technicalGaps": [{"area": "sahə", "issue": "problem", "recommendation": "tövsiyə"}],
-  "riskGaps": [{"risk": "risk", "recommendation": "tövsiyə"}],
-  "businessGaps": [{"area": "sahə", "issue": "problem", "recommendation": "tövsiyə"}],
-  "priorityActions": ["1. Ən vacib addım", "2. İkinci vacib addım", "3. Üçüncü vacib addım"]
-}`;
-
-  const raw = await askGroq(prompt);
-  const parsed = safeJSON(raw);
-  return parsed || { status: 'error', message: 'Review parse edilə bilmədi.' };
+JSON cavab ver:
+{"overallAssessment":"...","strengths":["..."],"criticalGaps":[{"area":"...","issue":"...","recommendation":"..."}],"regulatoryGaps":[{"requirement":"...","issue":"...","recommendation":"..."}],"technicalGaps":[{"area":"...","issue":"...","recommendation":"..."}],"riskGaps":[{"risk":"...","recommendation":"..."}],"${isTTS?'qaGaps':'businessGaps'}":[{"area":"...","issue":"...","recommendation":"..."}],"priorityActions":["1. ...","2. ...","3. ..."]}`;
+  const raw = await callClaude(prompt);
+  return safeJSON(raw) || { status: 'error', message: 'Review parse edilə bilmədi.' };
 }
 
-
+// ═══ RENDER ═══
 function renderTabs() {
   const tabs = currentDocType === 'iad' ? IAD_TABS : TTS_TABS;
   $('sec-tabs').innerHTML = tabs.map(t => `
@@ -701,48 +534,13 @@ function renderContent() {
   }
 }
 
+function selectSection(key) { activeSection = key; renderTabs(); renderContent(); }
+
 function copySection() {
-  const text = window._currentPlainText || '';
-  navigator.clipboard.writeText(text).then(() => {
+  navigator.clipboard.writeText(window._currentPlainText||'').then(() => {
     const btn = document.getElementById('copy-btn');
     if (btn) { btn.textContent = '✅ Kopyalandı'; setTimeout(() => { btn.textContent = '📋 Kopyala'; }, 2000); }
   });
-}
-
-function getPlainText(key, d) {
-  switch(key) {
-    case 'general': return `Sənəd Adı: ${d?.documentTitle||''}\nVersiya: ${d?.documentVersion||''}\nTarix: ${d?.documentDate||''}\nIT Biznes Analitik: ${d?.itBusinessAnalysts||''}\nJira: ${d?.jiraLink||''}`;
-    case 'summary': return d||'';
-    case 'asis': return d||'';
-    case 'businessneed': return d||'';
-    case 'tobe': return d||'';
-    case 'process': return d||'';
-    case 'stakeholders': return (d||[]).map(s=>`${s.role} | ${s.name} | ${s.responsibility}`).join('\n');
-    case 'terms': return (d||[]).map(t=>`${t.term}: ${t.definition}`).join('\n');
-    case 'acronyms': return (d||[]).map(a=>`${a.acronym}: ${a.description}`).join('\n');
-    case 'users': return (d||[]).map(u=>`${u.category} | ${u.description} | ${u.access}`).join('\n');
-    case 'functional': return (d||[]).map(f=>`${f.id} | ${f.requirement} | ${f.priority}`).join('\n');
-    case 'nonfunctional': return (d||[]).map(f=>`${f.id} | ${f.requirement} | ${f.category}`).join('\n');
-    case 'acceptance': return (d||[]).map(a=>`${a.id} | ${a.criteria} | ${a.testCase}`).join('\n');
-    case 'integrations': return [
-      'Xarici:', ...(d?.external||[]).map(i=>`  ${i.system} | ${i.type} | ${i.description}`),
-      'Daxili:', ...(d?.internal||[]).map(i=>`  ${i.system} | ${i.type} | ${i.description}`),
-      'Asılılıqlar:', ...(d?.dependencies||[]).map(i=>`  ${i.item} | ${i.description}`)
-    ].join('\n');
-    case 'service': return `Method: ${d?.method||''}\nURL: ${d?.url||''}\nBody: ${d?.bodyExample||''}\nSuccess: ${d?.successResponse||''}\nError: ${d?.errorResponse||''}`;
-    case 'risks': return [
-      'Texniki:', ...(d?.technical||[]).map(r=>`  ${r.risk} | ${r.impact} | ${r.mitigation}`),
-      'Biznes:', ...(d?.business||[]).map(r=>`  ${r.risk} | ${r.impact} | ${r.mitigation}`)
-    ].join('\n');
-    case 'modelling': return `BPMN:\n${d?.bpmn||''}\n\nSequence:\n${d?.sequence||''}\n\nERD:\n${d?.erd||''}`;
-    default: return '';
-  }
-}
-
-function selectSection(key) {
-  activeSection = key;
-  renderTabs();
-  renderContent();
 }
 
 // PDF
@@ -751,54 +549,32 @@ function downloadDoc() {
   const tabs = currentDocType === 'iad' ? IAD_TABS : TTS_TABS;
   let sections = '';
   tabs.forEach(t => {
-    try {
-      sections += `<div class="sec"><div class="sec-hdr"><span style="opacity:0.7;font-size:11px;margin-right:6px">${t.code}</span>${t.label}</div><div class="sec-body">${getHTML(t.key, currentResult[t.key])}</div></div>`;
-    } catch {}
+    try { sections += `<div class="sec"><div class="sec-hdr"><span style="opacity:0.7;font-size:11px;margin-right:6px">${t.code}</span>${t.label}</div><div class="sec-body">${getHTML(t.key, currentResult[t.key])}</div></div>`; } catch {}
   });
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${$('view-title').textContent}</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',sans-serif;padding:28px;color:#1e293b;max-width:960px;margin:0 auto;font-size:13px}
-    h1{font-size:20px;color:#1e3a5f;margin-bottom:4px;font-weight:800}
-    .meta{font-size:12px;color:#64748b;margin-bottom:16px}
-    hr{border:none;border-top:2px solid #e2e8f0;margin-bottom:20px}
-    .sec{margin-bottom:24px;break-inside:avoid}
-    .sec-hdr{background:#1e3a5f;color:white;padding:8px 14px;border-radius:6px 6px 0 0;font-weight:700;font-size:13px}
-    .sec-body{border:1px solid #e2e8f0;border-top:none;border-radius:0 0 6px 6px;padding:14px}
-    table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px}
-    th{background:#1e3a5f;color:white;padding:7px 12px;text-align:left;font-weight:600}
-    td{padding:7px 12px;border:1px solid #e2e8f0}
-    tr:nth-child(even) td{background:#f8fafc}
-    pre{background:#0f172a;color:#e2e8f0;padding:10px;border-radius:5px;font-size:11px;white-space:pre-wrap;margin-bottom:10px}
-    .box-val{background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;padding:10px;font-size:13px;white-space:pre-wrap;line-height:1.6;margin-bottom:10px}
-    .box-lbl{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:3px}
-    @media print{body{padding:16px}.sec{page-break-inside:avoid}}
-  </style></head><body>
-  <h1>${$('view-title').textContent}</h1>
-  <div class="meta">${$('view-date').textContent}</div>
-  <hr/>${sections}
-  <script>window.onload=()=>window.print()<\/script>
-  </body></html>`);
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',sans-serif;padding:28px;color:#1e293b;max-width:960px;margin:0 auto;font-size:13px}h1{font-size:20px;color:#1e3a5f;margin-bottom:4px;font-weight:800}.meta{font-size:12px;color:#64748b;margin-bottom:16px}hr{border:none;border-top:2px solid #e2e8f0;margin-bottom:20px}.sec{margin-bottom:24px;break-inside:avoid}.sec-hdr{background:#1e3a5f;color:white;padding:8px 14px;border-radius:6px 6px 0 0;font-weight:700;font-size:13px}.sec-body{border:1px solid #e2e8f0;border-top:none;border-radius:0 0 6px 6px;padding:14px}table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px}th{background:#1e3a5f;color:white;padding:7px 12px;text-align:left;font-weight:600}td{padding:7px 12px;border:1px solid #e2e8f0}tr:nth-child(even) td{background:#f8fafc}pre{background:#0f172a;color:#e2e8f0;padding:10px;border-radius:5px;font-size:11px;white-space:pre-wrap;margin-bottom:10px}.box-val{background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;padding:10px;font-size:13px;white-space:pre-wrap;line-height:1.6;margin-bottom:10px}.box-lbl{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:3px}@media print{body{padding:16px}.sec{page-break-inside:avoid}}</style>
+  </head><body><h1>${$('view-title').textContent}</h1><div class="meta">${$('view-date').textContent}</div><hr/>${sections}<script>window.onload=()=>window.print()<\/script></body></html>`);
   win.document.close();
 }
 
 // ═══ HTML BUILDERS ═══
 function box(l, v) {
-  return `<div style="margin-bottom:16px">
-    <div style="font-size:10px;font-weight:700;color:#6366f1;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:6px">
-      <div style="width:3px;height:12px;background:linear-gradient(180deg,#6366f1,#8b5cf6);border-radius:2px"></div>
-      ${l}
+  return `<div style="margin-bottom:14px">
+    <div style="font-size:11px;font-weight:700;color:#6366f1;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;display:flex;align-items:center;gap:6px">
+      <div style="width:3px;height:12px;background:linear-gradient(180deg,#6366f1,#8b5cf6);border-radius:2px"></div>${l}
     </div>
     <div style="background:linear-gradient(135deg,#fafafa,#f8fafc);border-radius:10px;padding:14px 16px;font-size:13.5px;color:#1e293b;border:1px solid #e8eaf0;white-space:pre-wrap;line-height:1.7;box-shadow:0 1px 3px rgba(0,0,0,0.04)">${v||'<span style="color:#94a3b8;font-style:italic">Məlumat yoxdur</span>'}</div>
   </div>`;
 }
 
 function tbl(heads, rows) {
-  const ths = heads.map(h=>`<th style="padding:10px 14px;color:white;text-align:left;font-weight:600;font-size:12px;letter-spacing:0.03em">${h}</th>`).join('');
+  const ths = heads.map(h=>`<th style="padding:10px 14px;color:white;text-align:left;font-weight:600;font-size:12px">${h}</th>`).join('');
   const trs = (!rows||!rows.length)
     ? `<tr><td colspan="${heads.length}" style="padding:14px;color:#94a3b8;font-style:italic;font-size:13px;text-align:center">Məlumat yoxdur</td></tr>`
-    : rows.map((r,i)=>`<tr style="background:${i%2===0?'white':'#f8fafc'};transition:background 0.15s" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='${i%2===0?'white':'#f8fafc'}'">${r.map(c=>`<td style="padding:10px 14px;color:#374151;border-bottom:1px solid #f1f5f9;font-size:13px">${c||'—'}</td>`).join('')}</tr>`).join('');
+    : rows.map((r,i)=>`<tr style="background:${i%2===0?'white':'#f8fafc'}" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='${i%2===0?'white':'#f8fafc'}'">
+        ${r.map(c=>`<td style="padding:10px 14px;color:#374151;border-bottom:1px solid #f1f5f9;font-size:13px">${c||'—'}</td>`).join('')}
+      </tr>`).join('');
   return `<div style="overflow-x:auto;margin-bottom:16px;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
     <table style="width:100%;border-collapse:collapse">
       <thead><tr style="background:linear-gradient(135deg,#1e3a5f,#2563eb)">${ths}</tr></thead>
@@ -807,9 +583,24 @@ function tbl(heads, rows) {
   </div>`;
 }
 
+function getPlainText(key, d) {
+  switch(key) {
+    case 'general': return `Sənəd Adı: ${d?.documentTitle||''}\nVersiya: ${d?.documentVersion||''}\nTarix: ${d?.documentDate||''}\nIT Biznes Analitik: ${d?.itBusinessAnalysts||''}`;
+    case 'summary': case 'asis': case 'businessneed': case 'tobe': case 'process': return d||'';
+    case 'stakeholders': return (d||[]).map(s=>`${s.role} | ${s.name} | ${s.responsibility}`).join('\n');
+    case 'terms': return (d||[]).map(t=>`${t.term}: ${t.definition}`).join('\n');
+    case 'acronyms': return (d||[]).map(a=>`${a.acronym}: ${a.description}`).join('\n');
+    case 'users': return (d||[]).map(u=>`${u.category} | ${u.description} | ${u.access}`).join('\n');
+    case 'functional': return (d||[]).map(f=>`${f.id} | ${f.requirement} | ${f.priority}`).join('\n');
+    case 'nonfunctional': return (d||[]).map(f=>`${f.id} | ${f.requirement} | ${f.category}`).join('\n');
+    case 'acceptance': return (d||[]).map(a=>`${a.id} | ${a.criteria} | ${a.testCase}`).join('\n');
+    default: return '';
+  }
+}
+
 function getHTML(key, d) {
   switch(key) {
-    case 'general': return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">${box('Versiya',d?.documentVersion)}${box('Tarix',d?.documentDate)}</div>`+box('Sənəd Adı',d?.documentTitle)+box('IT Biznes Analitik',d?.itBusinessAnalysts)+box('Jira Link',d?.jiraLink);
+    case 'general': return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">${box('Versiya',d?.documentVersion)}${box('Tarix',d?.documentDate)}</div>`+box('Sənəd Adı',d?.documentTitle)+box('IT Biznes Analitik',d?.itBusinessAnalysts)+box('Jira Link',d?.jiraLink);
     case 'stakeholders': return tbl(['Rol','Ad','Məsuliyyət'],(d||[]).map(s=>[s.role,s.name,s.responsibility]));
     case 'summary': return box('Xülasə',d);
     case 'terms': return tbl(['Termin','Tərif'],(d||[]).map(t=>[t.term,t.definition]));
@@ -820,139 +611,118 @@ function getHTML(key, d) {
     case 'users': return tbl(['Kateqoriya','Təsvir','Giriş'],(d||[]).map(u=>[u.category,u.description,u.access]));
     case 'process': return box('Proses Axışı',d);
     case 'modelling': return ['bpmn','sequence','erd'].map((type,i)=>`
-      <div style="margin-bottom:20px">
-        <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:13px;padding-bottom:6px;border-bottom:2px solid #eff6ff">8.${i+1} ${['BPMN','Sequence','ERD'][i]} Diaqram</div>
-        <div class="mermaid" style="background:#f8fafc;border-radius:8px;padding:14px;border:1px solid #e2e8f0">${d?.[type]||''}</div>
+      <div style="margin-bottom:24px;background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+        <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:10px 16px;color:white;font-weight:700;font-size:13px">
+          8.${i+1} ${['BPMN','Sequence','ERD'][i]} Diaqram
+        </div>
+        <div class="mermaid" style="padding:20px;background:#fafafa">${d?.[type]||''}</div>
       </div>`).join('');
     case 'integrations': return `
-      <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:13px">9.1 Xarici İnteqrasiyalar</div>
+      <div style="font-weight:700;color:#0369a1;margin-bottom:8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#0369a1;border-radius:2px"></div>9.1 Xarici İnteqrasiyalar</div>
       ${tbl(['Sistem','Növ','Təsvir'],(d?.external||[]).map(i=>[i.system,i.type,i.description]))}
-      <div style="font-weight:700;color:#1e3a5f;margin:14px 0 8px;font-size:13px">9.2 Daxili İnteqrasiyalar</div>
+      <div style="font-weight:700;color:#0369a1;margin:14px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#0369a1;border-radius:2px"></div>9.2 Daxili İnteqrasiyalar</div>
       ${tbl(['Sistem','Növ','Təsvir'],(d?.internal||[]).map(i=>[i.system,i.type,i.description]))}
-      <div style="font-weight:700;color:#1e3a5f;margin:14px 0 8px;font-size:13px">9.3 Texniki Asılılıqlar</div>
+      <div style="font-weight:700;color:#0369a1;margin:14px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#0369a1;border-radius:2px"></div>9.3 Texniki Asılılıqlar</div>
       ${tbl(['Maddə','Təsvir'],(d?.dependencies||[]).map(i=>[i.item,i.description]))}`;
     case 'service': return `
-      <div style="display:grid;grid-template-columns:90px 1fr;gap:12px;margin-bottom:14px">
-        <div style="background:#eff6ff;border-radius:8px;padding:12px;border:1px solid #bfdbfe;text-align:center">
-          <div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">METHOD</div>
-          <div style="font-size:18px;font-weight:800;color:#2563eb">${d?.method||'POST'}</div>
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:14px;margin-bottom:14px">
+        <div style="background:linear-gradient(135deg,#eff6ff,#eef2ff);border-radius:10px;padding:12px;border:1px solid #c7d2fe;text-align:center;box-shadow:0 2px 8px rgba(99,102,241,0.1)">
+          <div style="font-size:10px;font-weight:700;color:#6366f1;margin-bottom:4px">METHOD</div>
+          <div style="font-size:20px;font-weight:800;color:#4f46e5">${d?.method||'POST'}</div>
         </div>
-        <div style="background:#f8fafc;border-radius:8px;padding:12px;border:1px solid #e2e8f0">
-          <div style="font-size:10px;font-weight:700;color:#64748b;margin-bottom:4px">URL</div>
-          <div style="font-size:13px;color:#374151;font-family:monospace">${d?.url||''}</div>
-          <div style="font-size:12px;color:#64748b;margin-top:4px">${d?.description||''}</div>
+        <div style="background:linear-gradient(135deg,#fafafa,#f8fafc);border-radius:10px;padding:12px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+          <div style="font-size:10px;font-weight:700;color:#6366f1;margin-bottom:4px">URL</div>
+          <div style="font-size:13px;color:#374151;font-family:monospace;background:#f1f5f9;padding:6px 10px;border-radius:6px">${d?.url||''}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:6px">${d?.description||''}</div>
         </div>
       </div>
-      ${[['📤 Request Body',d?.bodyExample,'#e2e8f0'],['✅ Success (200)',d?.successResponse,'#86efac'],['❌ Error (400)',d?.errorResponse,'#fca5a5']].map(([l,v,c])=>`<div style="margin-bottom:12px"><div style="font-weight:700;font-size:12px;color:#1e3a5f;margin-bottom:5px">${l}</div><pre style="background:#0f172a;color:${c};border-radius:6px;padding:12px;font-size:12px;margin:0;white-space:pre-wrap">${v||''}</pre></div>`).join('')}
-      <div style="font-weight:700;font-size:12px;color:#1e3a5f;margin-bottom:8px">Xəta Kodları</div>
+      ${[['📤 Request Body',d?.bodyExample,'#7dd3fc'],['✅ Success (200)',d?.successResponse,'#86efac'],['❌ Error (400)',d?.errorResponse,'#fca5a5']].map(([l,v,c])=>`<div style="margin-bottom:14px"><div style="font-weight:700;font-size:12px;color:#1e293b;margin-bottom:6px">${l}</div><pre style="background:#0f172a;color:${c};border-radius:10px;padding:14px;font-size:12px;margin:0;white-space:pre-wrap;box-shadow:0 4px 12px rgba(0,0,0,0.15)">${v||''}</pre></div>`).join('')}
+      <div style="font-weight:700;font-size:12px;color:#1e293b;margin-bottom:8px">Xəta Kodları</div>
       ${tbl(['Kod','Təsvir'],(d?.errorCodes||[]).map(e=>[e.code,e.description]))}`;
     case 'functional': return tbl(['ID','Tələb','Prioritet'],(d||[]).map(f=>[f.id,f.requirement,f.priority]));
     case 'nonfunctional': return tbl(['ID','Tələb','Kateqoriya'],(d||[]).map(f=>[f.id,f.requirement,f.category]));
     case 'risks': return `
-      <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:13px">12.1 Texniki Məhdudiyyətlər</div>
+      <div style="background:linear-gradient(135deg,#fef2f2,#fff7ed);border-radius:10px;border:1px solid #fecaca;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#92400e">⚠️ Aşkar edilmiş risklər aşağıda göstərilmişdir.</div>
+      <div style="font-weight:700;color:#dc2626;margin-bottom:8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#dc2626;border-radius:2px"></div>12.1 Texniki Məhdudiyyətlər</div>
       ${tbl(['Risk','Təsir','Azaltma'],(currentResult?.risks?.technical||[]).map(r=>[r.risk,r.impact,r.mitigation]))}
-      <div style="font-weight:700;color:#1e3a5f;margin:14px 0 8px;font-size:13px">12.2 Biznes Məhdudiyyətləri</div>
+      <div style="font-weight:700;color:#d97706;margin:16px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#d97706;border-radius:2px"></div>12.2 Biznes Məhdudiyyətləri</div>
       ${tbl(['Risk','Təsir','Azaltma'],(currentResult?.risks?.business||[]).map(r=>[r.risk,r.impact,r.mitigation]))}`;
     case 'acceptance': return tbl(['ID','Meyar','Test Ssenarisi'],(d||[]).map(a=>[a.id,a.criteria,a.testCase]));
-    case 'iad_general': return `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-        ${box('Versiya', d?.documentVersion)}${box('Tarix', d?.documentDate)}
-      </div>
-      ${box('Sənəd Adı', d?.documentTitle)}
-      ${box('IT Biznes Analitik', d?.analyst)}`;
 
-    case 'iad_asis': return box('Cari Vəziyyət (AS-IS)', d);
-
+    // IAD bölmələri
+    case 'iad_general': return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">${box('Versiya',d?.documentVersion)}${box('Tarix',d?.documentDate)}</div>${box('Sənəd Adı',d?.documentTitle)}${box('IT Biznes Analitik',d?.analyst)}`;
+    case 'iad_asis': return box('Cari Vəziyyət (AS-IS)',d);
     case 'iad_needs': return `
-      <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:13px;display:flex;align-items:center;gap:6px">
-        <div style="width:3px;height:14px;background:#2563eb;border-radius:2px"></div>Əsas Biznes Ehtiyacları
-      </div>
-      ${tbl(['#','Biznes Ehtiyacı'], (d?.main||[]).map(n=>[n.number, n.need]))}
-      <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px">
-        <div style="width:3px;height:14px;background:#7c3aed;border-radius:2px"></div>Regulyator Tələblər
-      </div>
+      <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#2563eb;border-radius:2px"></div>Əsas Biznes Ehtiyacları</div>
+      ${tbl(['#','Biznes Ehtiyacı'],(d?.main||[]).map(n=>[n.number,n.need]))}
+      <div style="font-weight:700;color:#7c3aed;margin:16px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#7c3aed;border-radius:2px"></div>Regulyator Tələblər</div>
       ${(d?.regulatory||[]).map(r=>`<div style="background:#f8fafc;border-left:3px solid #7c3aed;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13px;color:#374151">${r}</div>`).join('')}
-      <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px">
-        <div style="width:3px;height:14px;background:#0369a1;border-radius:2px"></div>Hüquqi və Normativ Şərtlər
-      </div>
+      <div style="font-weight:700;color:#0369a1;margin:16px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#0369a1;border-radius:2px"></div>Hüquqi və Normativ Şərtlər</div>
       ${(d?.legal||[]).map(r=>`<div style="background:#f8fafc;border-left:3px solid #0369a1;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13px;color:#374151">${r}</div>`).join('')}
-      <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px">
-        <div style="width:3px;height:14px;background:#166534;border-radius:2px"></div>Daxili Bank Siyasətləri
-      </div>
+      <div style="font-weight:700;color:#166534;margin:16px 0 8px;font-size:13px;display:flex;align-items:center;gap:6px"><div style="width:3px;height:14px;background:#166534;border-radius:2px"></div>Daxili Bank Siyasətləri</div>
       ${(d?.internal||[]).map(r=>`<div style="background:#f8fafc;border-left:3px solid #166534;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13px;color:#374151">${r}</div>`).join('')}`;
-
-    case 'iad_tobe': return `
-      ${box('Gözlənilən Vəziyyətin Təsviri', d?.description)}
+    case 'iad_tobe': return `${box('Gözlənilən Vəziyyətin Təsviri',d?.description)}
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px">Müştəri Səyahəti</div>
-      ${tbl(['Addım','Mərhələ'], (d?.journey||[]).map(j=>[j.step, j.action]))}
+      ${tbl(['Addım','Mərhələ'],(d?.journey||[]).map(j=>[j.step,j.action]))}
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px">İştirak Edən Tərəflər</div>
-      ${tbl(['Tərəf','Rol'], (d?.participants||[]).map(p=>[p.party, p.role]))}`;
-
+      ${tbl(['Tərəf','Rol'],(d?.participants||[]).map(p=>[p.party,p.role]))}`;
     case 'iad_technical': return `
       <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:13px">Texniki Təsir Sahəsi</div>
-      ${tbl(['Sistem','Rol','Qeyd'], (d?.systems||[]).map(s=>[s.system, s.role, s.note]))}
+      ${tbl(['Sistem','Rol','Qeyd'],(d?.systems||[]).map(s=>[s.system,s.role,s.note]))}
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px">Daxili İnteqrasiyalar</div>
-      ${tbl(['Sistem','İstifadə Məqsədi'], (d?.internal||[]).map(i=>[i.system, i.purpose]))}
+      ${tbl(['Sistem','İstifadə Məqsədi'],(d?.internal||[]).map(i=>[i.system,i.purpose]))}
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px">Xarici İnteqrasiyalar</div>
-      ${tbl(['Sistem','İstifadə Məqsədi','Status'], (d?.external||[]).map(i=>[i.system, i.purpose, i.status]))}
+      ${tbl(['Sistem','İstifadə Məqsədi','Status'],(d?.external||[]).map(i=>[i.system,i.purpose,i.status]))}
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px">Texniki Asılılıqlar</div>
-      ${tbl(['Asılılıq','Status','Qeyd'], (d?.dependencies||[]).map(i=>[i.item, i.status, i.note]))}`;
-
+      ${tbl(['Asılılıq','Status','Qeyd'],(d?.dependencies||[]).map(i=>[i.item,i.status,i.note]))}`;
     case 'iad_risks': return `
-      <div style="font-weight:700;color:#1e3a5f;margin-bottom:8px;font-size:13px">Funksional Davranış Prinsipləri</div>
+      <div style="font-weight:700;color:#166534;margin-bottom:8px;font-size:13px">Funksional Davranış Prinsipləri</div>
       ${(d?.functionalPrinciples||[]).map(p=>`<div style="background:#f0fdf4;border-left:3px solid #22c55e;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13px;color:#374151">✓ ${p}</div>`).join('')}
       <div style="font-weight:700;color:#1e3a5f;margin:16px 0 8px;font-size:13px">Biznes Qaydaları</div>
       ${(d?.businessRules||[]).map(r=>`<div style="background:#eff6ff;border-left:3px solid #2563eb;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13px;color:#374151">◆ ${r}</div>`).join('')}
       <div style="font-weight:700;color:#dc2626;margin:16px 0 8px;font-size:13px">Mövcud Risklər</div>
-      ${tbl(['Risk ID','Risk','Təsir','Azaltma'], (d?.existing||[]).map(r=>[r.id, r.risk, r.impact, r.mitigation]))}
+      ${tbl(['Risk ID','Risk','Təsir','Azaltma'],(d?.existing||[]).map(r=>[r.id,r.risk,r.impact,r.mitigation]))}
       <div style="font-weight:700;color:#d97706;margin:16px 0 8px;font-size:13px">Təxmin Edilən Risklər</div>
-      ${tbl(['Risk ID','Risk','Təsir','Qeyd'], (d?.anticipated||[]).map(r=>[r.id, r.risk, r.impact, r.note]))}`;
+      ${tbl(['Risk ID','Risk','Təsir','Qeyd'],(d?.anticipated||[]).map(r=>[r.id,r.risk,r.impact,r.note]))}`;
 
+    // Review
     case 'review': {
-      const rv = d;
-      if (!rv) return '<div style="color:#94a3b8;font-size:13px;padding:12px">Review hələ hazır deyil.</div>';
-      if (rv.status === 'error') return `<div style="color:#dc2626;font-size:13px;padding:12px">${rv.message}</div>`;
-
-      const gapSection = (title, color, items, fields) => {
+      if (!d) return '<div style="color:#94a3b8;font-size:13px;padding:12px;text-align:center"><div style="font-size:32px;margin-bottom:8px">⏳</div>Review hələ hazır deyil.</div>';
+      if (d.status === 'error') return `<div style="color:#dc2626;font-size:13px;padding:12px">${d.message}</div>`;
+      const gapSection = (title, color, items, f) => {
         if (!items||!items.length) return '';
         return `<div style="margin-bottom:20px">
           <div style="font-weight:700;font-size:13px;color:${color};margin-bottom:8px;display:flex;align-items:center;gap:6px">
             <div style="width:3px;height:14px;background:${color};border-radius:2px"></div>${title}
           </div>
-          ${items.map(item=>`
-            <div style="background:#fafafa;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px">
-              <div style="font-weight:600;font-size:13px;color:#1e293b;margin-bottom:4px">${item[fields[0]]||''}</div>
-              <div style="font-size:13px;color:#dc2626;margin-bottom:6px">⚠️ ${item[fields[1]]||''}</div>
-              <div style="font-size:13px;color:#166534;background:#f0fdf4;padding:8px 12px;border-radius:6px">💡 ${item[fields[2]]||''}</div>
-            </div>`).join('')}
+          ${items.map(item=>`<div style="background:#fafafa;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px">
+            <div style="font-weight:600;font-size:13px;color:#1e293b;margin-bottom:4px">${item[f[0]]||''}</div>
+            <div style="font-size:13px;color:#dc2626;margin-bottom:6px">⚠️ ${item[f[1]]||''}</div>
+            <div style="font-size:13px;color:#166534;background:#f0fdf4;padding:8px 12px;border-radius:6px">💡 ${item[f[2]]||''}</div>
+          </div>`).join('')}
         </div>`;
       };
-
       return `
         <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:12px;padding:16px 20px;color:white;margin-bottom:20px">
           <div style="font-size:11px;opacity:0.8;margin-bottom:4px">Senior BA · Audit · Regulyativ Baxış</div>
           <div style="font-size:15px;font-weight:700">Peşəkar Review Nəticəsi</div>
         </div>
-
-        ${box('Ümumi Qiymətləndirmə', rv.overallAssessment)}
-
+        ${box('Ümumi Qiymətləndirmə', d.overallAssessment)}
         <div style="margin-bottom:20px">
           <div style="font-weight:700;font-size:13px;color:#166534;margin-bottom:8px;display:flex;align-items:center;gap:6px">
             <div style="width:3px;height:14px;background:#166534;border-radius:2px"></div>Güclü Tərəflər
           </div>
-          ${(rv.strengths||[]).map(s=>`<div style="background:#f0fdf4;border-left:3px solid #22c55e;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13px;color:#374151">✅ ${s}</div>`).join('')}
+          ${(d.strengths||[]).map(s=>`<div style="background:#f0fdf4;border-left:3px solid #22c55e;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13px;color:#374151">✅ ${s}</div>`).join('')}
         </div>
-
-        ${gapSection('Kritik Boşluqlar', '#dc2626', rv.criticalGaps, ['area','issue','recommendation'])}
-        ${gapSection('Regulyativ Boşluqlar', '#7c3aed', rv.regulatoryGaps, ['requirement','issue','recommendation'])}
-        ${gapSection('Texniki Boşluqlar', '#0369a1', rv.technicalGaps, ['area','issue','recommendation'])}
-        ${gapSection('Risk Boşluqları', '#d97706', rv.riskGaps, ['risk','risk','recommendation'])}
-        ${rv.qaGaps ? gapSection('QA Boşluqları', '#0891b2', rv.qaGaps, ['area','issue','recommendation']) : ''}
-        ${rv.businessGaps ? gapSection('Biznes Boşluqları', '#9333ea', rv.businessGaps, ['area','issue','recommendation']) : ''}
-
+        ${gapSection('Kritik Boşluqlar','#dc2626',d.criticalGaps,['area','issue','recommendation'])}
+        ${gapSection('Regulyativ Boşluqlar','#7c3aed',d.regulatoryGaps,['requirement','issue','recommendation'])}
+        ${gapSection('Texniki Boşluqlar','#0369a1',d.technicalGaps,['area','issue','recommendation'])}
+        ${gapSection('Risk Boşluqları','#d97706',d.riskGaps,['risk','risk','recommendation'])}
+        ${d.qaGaps ? gapSection('QA Boşluqları','#0891b2',d.qaGaps,['area','issue','recommendation']) : ''}
+        ${d.businessGaps ? gapSection('Biznes Boşluqları','#9333ea',d.businessGaps,['area','issue','recommendation']) : ''}
         <div style="background:linear-gradient(135deg,#fef3c7,#fef9c3);border:1px solid #fbbf24;border-radius:10px;padding:16px;margin-top:20px">
           <div style="font-weight:700;font-size:13px;color:#92400e;margin-bottom:10px">🎯 Prioritet Tədbirlər</div>
-          ${(rv.priorityActions||[]).map(a=>`<div style="font-size:13px;color:#78350f;padding:6px 0;border-bottom:1px solid #fde68a">${a}</div>`).join('')}
+          ${(d.priorityActions||[]).map(a=>`<div style="font-size:13px;color:#78350f;padding:6px 0;border-bottom:1px solid #fde68a">${a}</div>`).join('')}
         </div>`;
     }
     default: return '<div style="color:#94a3b8;font-size:13px">Məlumat yoxdur</div>';
